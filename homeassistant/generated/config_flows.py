@@ -344,6 +344,7 @@ FLOWS = {
         "izone",
         "jellyfin",
         "jewish_calendar",
+        "judosoftpluseins",
         "justnimbus",
         "jvc_projector",
         "kaleidescape",

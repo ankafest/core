@@ -1,0 +1,11 @@
+{
+  "domain": "judosoftpluseins",
+  "name": "Judo Soft Plus Eins",
+  "codeowners": ["@ankafest"],
+  "config_flow": true,
+  "documentation": "https://www.home-assistant.io/integrations/judorestservice",
+  "iot_class": "local_polling",
+  "loggers": ["judo_rest_service_i_soft_plus"],
+  "quality_scale": "bronze",
+  "requirements": []
+}

@@ -1,0 +1,20 @@
+{
+  "config": {
+    "abort": {
+      "no_devices_found": "[%key:common::config_flow::abort::no_devices_found%]",
+      "single_instance_allowed": "[%key:common::config_flow::abort::single_instance_allowed%]"
+    },
+    "step": {
+      "user": {
+        "data": {
+          "password": "password",
+          "port": "port",
+          "scan_interval": "scan_interval",
+          "serial_number": "serial_number",
+          "url": "url",
+          "username": "username"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,81 @@
+"""Setting up my number entities."""
+
+from __future__ import annotations
+
+import logging
+
+from homeassistant.components.sensor import SensorEntity, SensorStateClass
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
+
+from .configentry import MyConfigEntry
+from .const import REST_ITEMS
+from .coordinator import MyCoordinator
+from .entity import MyEntity
+from .item import Item
+
+logging.basicConfig()
+log: logging.Logger = logging.getLogger(name=__name__)
+
+
+async def async_setup_entry(
+    hass: HomeAssistant,
+    config_entry: MyConfigEntry,
+    async_add_entities: AddConfigEntryEntitiesCallback,
+) -> None:
+    """Set up the sensor platform."""
+    _useless = hass
+    # start with an empty list of entries
+    entries = []
+
+    # we create one communicator per integration only for better performance and to allow dynamic parameters
+    coordinator = config_entry.runtime_data.coordinator
+
+    for index, item in enumerate(REST_ITEMS):
+        mysensor = MySensorEntity(
+            config_entry=config_entry,
+            rest_item=item,
+            coordinator=coordinator,
+            idx=index,
+        )
+        entries.append(mysensor)
+
+    async_add_entities(
+        entries,
+        update_before_add=True,
+    )
+
+
+class MySensorEntity(CoordinatorEntity, SensorEntity, MyEntity):
+    """An entity using CoordinatorEntity.
+
+    The CoordinatorEntity class provides:
+    should_poll
+    async_update
+    async_added_to_hass
+    available
+
+    The base class for entities that hold general parameters
+    """
+
+    _attr_should_poll = True
+    _attr_has_entity_name = True
+    _attr_state_class = SensorStateClass.MEASUREMENT
+
+    def __init__(
+        self,
+        config_entry: MyConfigEntry,
+        rest_item: Item,
+        coordinator: MyCoordinator,
+        idx,
+    ) -> None:
+        """Initialize of MySensorEntity."""
+        super().__init__(coordinator, context=idx)
+        self.idx = idx
+        MyEntity.__init__(self, config_entry, rest_item, coordinator.rest_api)
+
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        self._attr_native_value = self._rest_item.value
+        self.async_write_ha_state()
