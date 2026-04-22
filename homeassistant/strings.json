@@ -23,7 +23,7 @@
         "already_configured_location": "Location is already configured",
         "already_configured_service": "Service is already configured",
         "already_in_progress": "Configuration flow is already in progress",
-        "cloud_not_connected": "Not connected to Home Assistant Cloud.",
+        "cloud_not_connected": "Not connected to d Home Assistant Cloud.",
         "no_devices_found": "No devices found on the network",
         "oauth2_authorize_url_timeout": "Timeout generating authorize URL.",
         "oauth2_error": "Received invalid token data.",
