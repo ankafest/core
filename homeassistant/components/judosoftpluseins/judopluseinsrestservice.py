@@ -3,14 +3,12 @@
 from datetime import datetime
 from functools import partial
 import logging
-import time
 
 import requests
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     ATTR_NAME,
-    CONF_DEVICE,
     CONF_PASSWORD,
     CONF_PORT,
     CONF_URL,
