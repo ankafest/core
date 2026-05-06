@@ -35,6 +35,7 @@ Icon
 # GITHUB Proposed Python stuff:
 *.py[cod]
 __pycache__
+__pycache__/
 
 # C extensions
 *.so

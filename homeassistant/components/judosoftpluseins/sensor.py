@@ -1,11 +1,11 @@
-"""Setting up my number entities."""
+"""Setting up my text entities."""
 
 from __future__ import annotations
 
 import logging
 
-from homeassistant.components.sensor import SensorEntity, SensorStateClass
-from homeassistant.core import HomeAssistant
+from homeassistant.components.sensor import SensorEntity
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -24,12 +24,9 @@ async def async_setup_entry(
     config_entry: MyConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    """Set up the sensor platform."""
-    _useless = hass
-    # start with an empty list of entries
+    """Start with an empty list of entries."""
     entries = []
 
-    # we create one communicator per integration only for better performance and to allow dynamic parameters
     coordinator = config_entry.runtime_data.coordinator
 
     for index, item in enumerate(REST_ITEMS):
@@ -61,7 +58,6 @@ class MySensorEntity(CoordinatorEntity, SensorEntity, MyEntity):
 
     _attr_should_poll = True
     _attr_has_entity_name = True
-    _attr_state_class = SensorStateClass.MEASUREMENT
 
     def __init__(
         self,
@@ -75,6 +71,7 @@ class MySensorEntity(CoordinatorEntity, SensorEntity, MyEntity):
         self.idx = idx
         MyEntity.__init__(self, config_entry, rest_item, coordinator.rest_api)
 
+    @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
         self._attr_native_value = self._rest_item.value

@@ -3,7 +3,7 @@
 from datetime import timedelta
 import logging
 
-from homeassistant import const
+from homeassistant.const import CONF_SCAN_INTERVAL
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
@@ -31,16 +31,12 @@ class MyCoordinator(DataUpdateCoordinator):
             hass,
             log,
             # Name of the data. For logging purposes.
-            name="judo_rest_api-coordinator",
+            name="judo_rest_api_coordinator",
             # Polling interval. Will only be polled if there are subscribers.
             # update_interval=CONST.SCAN_INTERVAL,
             update_interval=timedelta(
-                seconds=int(config_entry.data[const.CONF_SCAN_INTERVAL])
+                seconds=int(config_entry.data[CONF_SCAN_INTERVAL])
             ),
-            # Set always_update to `False` if the data returned from the
-            # api can be compared via `__eq__` to avoid duplicate updates
-            # being dispatched to listeners
-            always_update=True,
         )
         self._rest_api = my_api
         self._device = None

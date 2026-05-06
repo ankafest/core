@@ -14,14 +14,11 @@ from .judopluseinsrestservice import JudoRestAPI
 # For your initial PR, limit it to 1 platform.
 _PLATFORMS: list[Platform] = [Platform.SENSOR]
 
-# Alias name should be prefixed by integration name
-type New_NameConfigEntry = ConfigEntry[MyConfigEntry]
-
 
 async def async_setup_entry(hass: HomeAssistant, entry: MyConfigEntry) -> bool:
     """Set up Judo Soft Plus Eins from a config entry."""
 
-    rest_api = JudoRestAPI(hass)
+    rest_api = JudoRestAPI(config_entry=entry, hass=hass)
     coordinator = MyCoordinator(
         hass=hass, my_api=rest_api, api_items=REST_ITEMS, config_entry=entry
     )

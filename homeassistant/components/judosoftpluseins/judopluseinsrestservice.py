@@ -3,6 +3,7 @@
 from datetime import datetime
 from functools import partial
 import logging
+import time
 
 import requests
 
@@ -12,12 +13,40 @@ from homeassistant.const import (
     CONF_DEVICE,
     CONF_PASSWORD,
     CONF_PORT,
+    CONF_URL,
     CONF_USERNAME,
-    URL_API,
 )
 from homeassistant.core import HomeAssistant
 
-from . import const
+from .const import (
+    COMMAD_LOGOUT,
+    COMMAND,
+    COMMAND_CONNECT,
+    COMMAND_LOGIN,
+    COMMAND_STANDBY,
+    COMMAND_WATER_DAILY,
+    COMMAND_WATER_MONTHLY,
+    COMMAND_WATER_WEEKLY,
+    COMMAND_WATER_YEARLY,
+    COMMAND_WATERSTOP_START,
+    COMMAND_WATERSTOP_STOP,
+    DATA,
+    DAY,
+    DAYS,
+    DEFAULT_DEVICE,
+    GROUP,
+    GROUP_CONSUMPTION,
+    GROUP_REGISTER,
+    GROUP_WATERSTOP,
+    MONTH,
+    PARAMETER,
+    ROLE,
+    ROLE_CUSTOMER,
+    SERIAL_NUMBER,
+    TOKEN,
+    USER,
+    YEAR,
+)
 from .myexceptions import GetRequestException
 
 log = logging.getLogger(__name__)
@@ -26,53 +55,64 @@ log = logging.getLogger(__name__)
 class JudoRestAPI:
     """RestApi for To JudoAPI."""
 
-    def __init__(self, hass: HomeAssistant) -> None:
+    def __init__(self, config_entry: ConfigEntry, hass: HomeAssistant) -> None:
         """Initializing the input data."""
         self.homeassisant = hass
-        self.passwort = ConfigEntry.data[CONF_PASSWORD]
-        self.username = ConfigEntry.data[CONF_USERNAME]
-        self.serial_nummber = ConfigEntry.data[const.SERIAL_NUMBER]
+        self.passwort = config_entry.data[CONF_PASSWORD]
+        self.username = config_entry.data[CONF_USERNAME]
+        self.serial_nummber = config_entry.data[SERIAL_NUMBER]
         self.base_url = (
             "https://"
-            + str(ConfigEntry.data[URL_API])
+            + str(config_entry.data[CONF_URL])
             + ":"
-            + str(ConfigEntry.data[CONF_PORT])
+            + str(config_entry.data[CONF_PORT])
+            + "/"
         )
         self.connected = False
         self.standby_status = None
         self.login_param = {
-            const.GROUP: const.GROUP_REGISTER,
-            const.COMMAND: const.COMMAND_LOGIN,
-            ATTR_NAME: const.COMMAND_LOGIN,
-            CONF_USERNAME: self.username,
+            GROUP: GROUP_REGISTER,
+            COMMAND: COMMAND_LOGIN,
+            ATTR_NAME: COMMAND_LOGIN,
+            USER: self.username,
             CONF_PASSWORD: self.passwort,
-            const.ROLE: const.ROLE_CUSTOMER,
+            ROLE: ROLE_CUSTOMER,
         }
         self.connect_param = {
-            const.GROUP: const.GROUP_REGISTER,
-            const.COMMAND: const.COMMAND_CONNECT,
-            const.SERIAL_NUMBER: self.serial_nummber,
-            CONF_DEVICE: const.DEFAULT_DEVICE,
+            GROUP: GROUP_REGISTER,
+            COMMAND: COMMAND_CONNECT,
+            SERIAL_NUMBER: self.serial_nummber,
+            PARAMETER: DEFAULT_DEVICE,
         }
         self.consumption_request = {
-            const.GROUP: const.GROUP_CONSUMPTION,
+            GROUP: GROUP_CONSUMPTION,
         }
         self.waterstop_request = {
-            const.GROUP: const.GROUP_WATERSTOP,
-            const.COMMAND: str(const.COMMAND_STANDBY),
+            GROUP: GROUP_WATERSTOP,
+            COMMAND: str(COMMAND_STANDBY),
         }
         self.error_message_response_status = (
             "RequestException after %1 response_status = %2 "
         )
         self.error_during_get_request = "An error raised during get-request for %1"
-        self.token = self.async_login_and_connect()
+        self.token = None
+        if self.async_login_and_connect():
+            log.info("Successfully logged in and connected to Judo API")
+        else:
+            log.error("Failed to log in and connect to Judo API")
 
     async def get_request(self, params, topic):
         """Get-Request for all judo-requests."""
-        params = params | {const.TOKEN: self.token}
+        params = params | {TOKEN: self.token}
         try:
             response = await self.homeassisant.async_add_executor_job(
-                partial(requests.get, url=self.base_url, params=params, timeout=30)
+                partial(
+                    requests.get,
+                    url=self.base_url,
+                    params=params,
+                    timeout=60,
+                    verify=False,
+                )
             )
             if response.status_code != 200:
                 log.error(
@@ -83,18 +123,65 @@ class JudoRestAPI:
                 raise requests.exceptions.RequestException
         except GetRequestException:
             log.info(self.error_during_get_request, "waterstop")
-        return response.json()[const.DATA]
+        return response.json()[DATA]
 
     async def async_login_and_connect(self):
         """Connect to Judo Api."""
-        response = await self.get_request(
-            params=self.login_param, topic=const.COMMAND_LOGIN
-        )
-
+        try:
+            myurl = (
+                self.base_url
+                + "?group="
+                + GROUP_REGISTER
+                + "&command="
+                + COMMAND_LOGIN
+                + "&name="
+                + COMMAND_LOGIN
+                + "&user="
+                + self.username
+                + "&password="
+                + self.passwort.replace("#", "%23")
+                + "&role="
+                + ROLE_CUSTOMER
+            )
+            response = await self.homeassisant.async_add_executor_job(
+                partial(requests.get, url=myurl, timeout=60, verify=False)
+            )
+            if response.status_code != 200:
+                log.error(
+                    self.error_message_response_status,
+                    "Login",
+                    response.status_code,
+                )
+                raise requests.exceptions.RequestException
+        except GetRequestException:
+            log.info(self.error_during_get_request, "Login")
         json_response = response.json()
-        token = str(json_response["token"])
-        await self.get_request(params=self.connect_param, topic=const.COMMAND_CONNECT)
-        return token
+
+        a = response.json()
+        __token = str(json_response["token"])
+        params = self.connect_param | {TOKEN: __token}
+        try:
+            response = await self.homeassisant.async_add_executor_job(
+                partial(
+                    requests.get,
+                    url=self.base_url,
+                    params=params,
+                    timeout=60,
+                    verify=False,
+                )
+            )
+            if response.status_code != 200:
+                log.error(
+                    self.error_message_response_status,
+                    "Connect",
+                    response.status_code,
+                )
+                raise requests.exceptions.RequestException
+        except GetRequestException:
+            log.info(self.error_during_get_request, "Connect")
+        self.token = __token
+        a = response.json()
+        return True
 
     async def async_get_water_consumption_request(
         self, year, month=None, week_of_day=None, day=None
@@ -114,14 +201,14 @@ class JudoRestAPI:
     ):
         """Get 'command='+ command for consumption request."""
         return {
-            const.COMMAND: (
-                const.COMMAND_WATER_DAILY
+            COMMAND: (
+                COMMAND_WATER_DAILY
                 if day is not None
-                else const.COMMAND_WATER_WEEKLY
+                else COMMAND_WATER_WEEKLY
                 if week_of_day is not None
-                else const.COMMAND_WATER_MONTHLY
+                else COMMAND_WATER_MONTHLY
                 if month is not None and day is None and week_of_day is None
-                else const.COMMAND_WATER_YEARLY
+                else COMMAND_WATER_YEARLY
             )
         }
 
@@ -129,33 +216,33 @@ class JudoRestAPI:
         self, year, month=None, day=None, week_of_day=None
     ):
         """Get time-parameter for consumption-request."""
-        params = {const.YEAR: year}
+        params = {YEAR: year}
         if month is not None:
-            params[const.MONTH] = month
+            params[MONTH] = month
         if day is not None:
-            params[const.DAY] = day
+            params[DAY] = day
         if week_of_day is not None:
-            params[const.DAYS] = week_of_day
+            params[DAYS] = week_of_day
         if day is not None:
-            params[const.DAY] = day
+            params[DAY] = day
         return params
 
     async def async_get_salt_consumption_request(self, command):
         """Request of type Consumptions."""
-        params = self.consumption_request | {const.COMMAND: command}
+        params = self.consumption_request | {COMMAND: command}
         return await self.get_request(params=params, topic="salt-consumption")
 
-    async def async_set_waterstop(self, on_off=const.COMMAND_WATERSTOP_START):
+    async def async_set_waterstop(self, on_off=COMMAND_WATERSTOP_START):
         """Request of type Consumptions."""
         params = self.waterstop_request
-        response = await self.get_request(params=params, topic=const.GROUP_WATERSTOP)
-        device_status = response.json()[const.DATA]
-        if (device_status == "0" and on_off == const.COMMAND_WATERSTOP_STOP) or (
-            device_status != "0" and on_off == const.COMMAND_WATERSTOP_START
+        response = await self.get_request(params=params, topic=GROUP_WATERSTOP)
+        device_status = response.json()[DATA]
+        if (device_status == "0" and on_off == COMMAND_WATERSTOP_STOP) or (
+            device_status != "0" and on_off == COMMAND_WATERSTOP_START
         ):
-            params = self.waterstop_request | {const.PARAMETER: on_off}
+            params = self.waterstop_request | {PARAMETER: on_off}
             await self.get_request(
-                params=params, topic=const.GROUP_WATERSTOP + " set " + on_off
+                params=params, topic=GROUP_WATERSTOP + " set " + on_off
             )
 
     async def async_get_water_consumtion_of_day(self):
@@ -187,9 +274,9 @@ class JudoRestAPI:
     async def async_logout(self):
         """Logout of Judo API."""
         params = {
-            const.GROUP: const.GROUP_REGISTER,
-            const.COMMAND: const.COMMAD_LOGOUT,
-            const.TOKEN: self.token,
+            GROUP: GROUP_REGISTER,
+            COMMAND: COMMAD_LOGOUT,
+            TOKEN: self.token,
         }
-        await self.get_request(params=params, topic=const.COMMAD_LOGOUT)
+        await self.get_request(params=params, topic=COMMAD_LOGOUT)
         self.token = None

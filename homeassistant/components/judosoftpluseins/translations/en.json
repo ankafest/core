@@ -1,0 +1,53 @@
+{
+    "config": {
+        "abort": {
+            "no_devices_found": "No devices found on the network",
+            "single_instance_allowed": "Already configured. Only a single configuration possible."
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "password": "password",
+                    "port": "port",
+                    "scan_interval": "scan_interval",
+                    "serial_number": "serial_number",
+                    "url": "url",
+                    "username": "username"
+                }
+            }
+        }
+    },
+    "device": {
+        "dev_statistics": {
+            "name": "Judo Statistics{postfix}"
+        },
+        "dev_system": {
+            "name": "Judo System{postfix}"
+        },
+        "dev_unknown": {
+            "name": "Judo Unknown{postfix}"
+        }
+    },
+    "entity": {
+        "sensor": {
+            "salt_quantity": {
+                "name": "Salt quantity"
+            },
+            "salt_range": {
+                "name": "Salt range"
+            },
+            "water_daily": {
+                "name": "Water daily"
+            },
+            "water_monthly": {
+                "name": "Water monthly"
+            },
+            "water_weekly": {
+                "name": "Water weekly"
+            },
+            "water_yearly": {
+                "name": "Water yearly"
+            }
+        }
+    }
+}

@@ -16,5 +16,37 @@
         }
       }
     }
-  }
+  },
+  "device": {
+        "dev_statistics": {
+            "name": "Judo Statistics{postfix}"
+        },
+        "dev_system": {
+            "name": "Judo System{postfix}"
+        },
+        "dev_unknown": {
+            "name": "Judo Unknown{postfix}"
+        }
+    },
+  "entity": {
+        "sensor": {
+            "water_yearly": {
+                "name": "Water yearly"
+            },
+            "water_monthly": {
+                "name": "Water monthly"
+            },
+            "water_daily": {
+                "name": "Water daily"
+            },
+            "water_weekly": {
+                "name": "Water weekly"
+            },
+            "salt_quantity": {
+                "name": "Salt quantity"
+            },
+            "salt_range": {
+                "name": "Salt range"
+            }
+        }}
 }
