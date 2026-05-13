@@ -8,7 +8,15 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .configentry import MyConfigEntry
-from .const import COMMAND_SALT_QUANTITY, COMMAND_SALT_RANGE
+from .const import (
+    COMMAND_SALT_QUANTITY,
+    COMMAND_SALT_RANGE,
+    COMMAND_STANDBY,
+    COMMAND_WATER_AVERAGE,
+    COMMAND_WATER_CURRENT,
+    COMMAND_WATER_TOTAL,
+    REST_ITEMS,
+)
 from .item import Item
 from .judopluseinsrestservice import JudoRestAPI
 
@@ -35,37 +43,50 @@ class MyCoordinator(DataUpdateCoordinator):
             # Polling interval. Will only be polled if there are subscribers.
             # update_interval=CONST.SCAN_INTERVAL,
             update_interval=timedelta(
-                seconds=int(config_entry.data[CONF_SCAN_INTERVAL])
+                seconds=int(config_entry.data[CONF_SCAN_INTERVAL]),
             ),
+            always_update=True,
         )
         self._rest_api = my_api
         self._device = None
         self._restitems = api_items
-        self._number_of_items = len(api_items)
         self._config_entry = config_entry
 
     async def get_value(self, rest_item: Item):
         """Read a value from the rest API."""
-        match rest_item.translation_key:
-            case "water_yearly":
-                data = await self._rest_api.async_get_water_consumtion_of_year()
-            case "water_monthly":
-                data = await self._rest_api.async_get_water_consumtion_of_month()
-            case "water_daily":
-                data = await self._rest_api.async_get_water_consumtion_of_day()
-            case "water_weekly":
-                data = await self._rest_api.async_get_water_consumtion_of_week()
-            case "salt_quantity":
-                data = await self._rest_api.async_get_salt_consumption_request(
-                    command=COMMAND_SALT_QUANTITY
-                )
-            case "salt_range":
-                data = await self._rest_api.async_get_salt_consumption_request(
-                    command=COMMAND_SALT_RANGE
-                )
-            case _:
-                log.error("Unknown item: %s", rest_item.translation_key)
-                return 0
+        data = []
+        if rest_item.rest_item_name == COMMAND_WATER_AVERAGE:
+            data.append(await self._rest_api.async_get_average_water_consumption())
+        elif rest_item.rest_item_name == COMMAND_WATER_CURRENT:
+            temporary_data = str(
+                await self._rest_api.async_get_current_water_consumption()
+            )
+            data.extend(temporary_data.split())
+        elif rest_item.rest_item_name == COMMAND_WATER_TOTAL:
+            temporary_data = str(
+                await self._rest_api.async_get_total_water_consumption()
+            )
+            data.extend(temporary_data.split())
+        elif rest_item.rest_item_name == COMMAND_STANDBY:
+            data.append(await self._rest_api.async_get_waterstop_standby())
+        elif rest_item.rest_item_name == COMMAND_SALT_QUANTITY:
+            temporary_data = int(str(await self._rest_api.async_salt_quantity())) / 1000
+            data.append(temporary_data)
+            data.append(str(float(temporary_data) * 100 / 50))
+        elif rest_item.rest_item_name == COMMAND_SALT_RANGE:
+            temporary_data = str(await self._rest_api.async_get_salt_range())
+            temporary_int = int(temporary_data)
+            data.append(temporary_data)
+            data.append(str(round(temporary_int / 7)))
+        elif rest_item.rest_item_name == COMMAND_STANDBY:
+            data.append(
+                "on"
+                if await self._rest_api.async_get_waterstop_standby() == "0"
+                else "off"
+            )
+        else:
+            log.error("Unknown item: %s", rest_item.rest_item_name)
+            return data
         return data
 
     async def _async_setup(self):
@@ -79,7 +100,23 @@ class MyCoordinator(DataUpdateCoordinator):
         so entities can quickly look up their data.
         """
         for rest_item in self._restitems:
-            rest_item.value = str(await self.get_value(rest_item))
+            data = await self.get_value(rest_item)
+            if rest_item.rest_item_name in (
+                COMMAND_WATER_AVERAGE,
+                COMMAND_STANDBY,
+            ):
+                rest_item.list_of_entites[0].result = data[0]
+            elif rest_item.rest_item_name in (
+                COMMAND_WATER_CURRENT,
+                COMMAND_WATER_TOTAL,
+                COMMAND_SALT_RANGE,
+                COMMAND_SALT_QUANTITY,
+            ):
+                rest_item.list_of_entites[0].result = data[0]
+                rest_item.list_of_entites[1].result = data[1]
+            else:
+                log.error("Unknown item: %s", rest_item.rest_item_name)
+        return self._restitems
 
     @property
     def rest_api(self):

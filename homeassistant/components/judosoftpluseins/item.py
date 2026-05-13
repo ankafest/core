@@ -1,85 +1,32 @@
 """Fill and get Items."""
 
+from .entity_item import EntityItem
+
 
 class Item:
     """items definition."""
 
-    def __init__(self, translation_key: str, icon: str, format: str) -> None:
+    def __init__(self, rest_item_name: str, list_of_entites: list[EntityItem]) -> None:
         """Init the items definition."""
-        self._translation_key = translation_key
-        self._text = " "
-        self._icon = icon
-        self._unit_of_measurement = " "
-        self._min = 0
-        self._max = 0
-        self._format = format
+        self._rest_item_name = rest_item_name
+        self._list_of_entites = list_of_entites
 
     @property
-    def translation_key(self) -> str:
-        """Return the translation key."""
-        return self._translation_key
+    def rest_item_name(self) -> str:
+        """Return the rest item name."""
+        return self._rest_item_name
 
-    @translation_key.setter
-    def translation_key(self, value: str) -> None:
-        """Set the translation key."""
-        self._translation_key = value
-
-    @property
-    def format(self) -> str:
-        """Return the format."""
-        return self._format
-
-    @format.setter
-    def format(self, value: str) -> None:
-        """Set the format."""
-        self._format = value
+    @rest_item_name.setter
+    def rest_item_name(self, value: str) -> None:
+        """Set the rest item name."""
+        self._rest_item_name = value
 
     @property
-    def text(self) -> str:
-        """Return the text."""
-        return self._text
+    def list_of_entites(self) -> list[EntityItem]:
+        """Return the list of entities."""
+        return self._list_of_entites
 
-    @text.setter
-    def value(self, value: str) -> None:
-        """Set the value."""
-        self._text = value
-
-    @property
-    def icon(self) -> str:
-        """Return the icon."""
-        return self._icon
-
-    @icon.setter
-    def icon(self, value) -> None:
-        """Set the icon."""
-        self._icon = value
-
-    @property
-    def unit_of_measurement(self) -> str:
-        """Return the unit of measurement."""
-        return self.unit_of_measurement
-
-    @unit_of_measurement.setter
-    def unit_of_measurement(self, value: str) -> None:
-        """Set the unit of measurement."""
-        self._unit_of_measurement = value
-
-    @property
-    def min(self) -> float:
-        """Return the Min."""
-        return self._min
-
-    @min.setter
-    def min(self, value: float) -> None:
-        """Set the Min."""
-        self.min = value
-
-    @property
-    def max(self) -> float:
-        """Return the Max."""
-        return self._max
-
-    @max.setter
-    def max(self, value: float) -> None:
-        """Set the Max."""
-        self._max = value
+    @list_of_entites.setter
+    def list_of_entites(self, entity_list: list[EntityItem]) -> None:
+        """Set the list of entities."""
+        self._list_of_entites = entity_list

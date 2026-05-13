@@ -17,33 +17,27 @@ from homeassistant.const import (
 from homeassistant.core import HomeAssistant
 
 from .const import (
-    COMMAD_LOGOUT,
     COMMAND,
     COMMAND_CONNECT,
     COMMAND_LOGIN,
+    COMMAND_SALT_QUANTITY,
+    COMMAND_SALT_RANGE,
     COMMAND_STANDBY,
-    COMMAND_WATER_DAILY,
-    COMMAND_WATER_MONTHLY,
-    COMMAND_WATER_WEEKLY,
-    COMMAND_WATER_YEARLY,
-    COMMAND_WATERSTOP_START,
-    COMMAND_WATERSTOP_STOP,
+    COMMAND_WATER_AVERAGE,
+    COMMAND_WATER_CURRENT,
+    COMMAND_WATER_TOTAL,
     DATA,
-    DAY,
-    DAYS,
     DEFAULT_DEVICE,
     GROUP,
     GROUP_CONSUMPTION,
     GROUP_REGISTER,
     GROUP_WATERSTOP,
-    MONTH,
     PARAMETER,
     ROLE,
     ROLE_CUSTOMER,
     SERIAL_NUMBER,
     TOKEN,
     USER,
-    YEAR,
 )
 from .myexceptions import GetRequestException
 
@@ -87,7 +81,7 @@ class JudoRestAPI:
         }
         self.waterstop_request = {
             GROUP: GROUP_WATERSTOP,
-            COMMAND: str(COMMAND_STANDBY),
+            COMMAND: COMMAND_STANDBY,
         }
         self.error_message_response_status = (
             "RequestException after %1 response_status = %2 "
@@ -126,23 +120,14 @@ class JudoRestAPI:
     async def async_login_and_connect(self):
         """Connect to Judo Api."""
         try:
-            myurl = (
-                self.base_url
-                + "?group="
-                + GROUP_REGISTER
-                + "&command="
-                + COMMAND_LOGIN
-                + "&name="
-                + COMMAND_LOGIN
-                + "&user="
-                + self.username
-                + "&password="
-                + self.passwort.replace("#", "%23")
-                + "&role="
-                + ROLE_CUSTOMER
-            )
             response = await self.homeassisant.async_add_executor_job(
-                partial(requests.get, url=myurl, timeout=60, verify=False)
+                partial(
+                    requests.get,
+                    url=self.base_url,
+                    params=self.login_param,
+                    timeout=60,
+                    verify=False,
+                )
             )
             if response.status_code != 200:
                 log.error(
@@ -154,8 +139,6 @@ class JudoRestAPI:
         except GetRequestException:
             log.info(self.error_during_get_request, "Login")
         json_response = response.json()
-
-        a = response.json()
         __token = str(json_response["token"])
         params = self.connect_param | {TOKEN: __token}
         try:
@@ -178,103 +161,40 @@ class JudoRestAPI:
         except GetRequestException:
             log.info(self.error_during_get_request, "Connect")
         self.token = __token
-        a = response.json()
         return True
 
-    async def async_get_water_consumption_request(
-        self, year, month=None, week_of_day=None, day=None
-    ):
-        """Request of type Consumptions."""
-        command = self.get_water_consumption_request_command(
-            year, month, week_of_day, day
-        )
-        time_params = self.get_water_consumptiom_request_param(
-            year=year, month=month, day=day, week_of_day=week_of_day
-        )
-        params = self.consumption_request | command | time_params
-        return await self.get_request(params=params, topic="water-consumption")
+    async def async_get_current_water_consumption(self):
+        """Get current water consumption."""
+        params = self.consumption_request | {COMMAND: COMMAND_WATER_CURRENT}
+        data = await self.get_request(params, "current water consumption")
+        return data
 
-    def get_water_consumption_request_command(
-        self, year, month=None, week_of_day=None, day=None
-    ):
-        """Get 'command='+ command for consumption request."""
-        return {
-            COMMAND: (
-                COMMAND_WATER_DAILY
-                if day is not None
-                else COMMAND_WATER_WEEKLY
-                if week_of_day is not None
-                else COMMAND_WATER_MONTHLY
-                if month is not None and day is None and week_of_day is None
-                else COMMAND_WATER_YEARLY
-            )
-        }
+    async def async_get_total_water_consumption(self):
+        """Get total water consumption."""
+        params = self.consumption_request | {COMMAND: COMMAND_WATER_TOTAL}
+        data = await self.get_request(params, "total water consumption")
+        return data
 
-    def get_water_consumptiom_request_param(
-        self, year, month=None, day=None, week_of_day=None
-    ):
-        """Get time-parameter for consumption-request."""
-        params = {YEAR: year}
-        if month is not None:
-            params[MONTH] = month
-        if day is not None:
-            params[DAY] = day
-        if week_of_day is not None:
-            params[DAYS] = week_of_day
-        if day is not None:
-            params[DAY] = day
-        return params
+    async def async_get_average_water_consumption(self):
+        """Get average water consumption."""
+        params = self.consumption_request | {COMMAND: COMMAND_WATER_AVERAGE}
+        data = await self.get_request(params, "average water consumption")
+        return data
 
-    async def async_get_salt_consumption_request(self, command):
-        """Request of type Consumptions."""
-        params = self.consumption_request | {COMMAND: command}
-        return await self.get_request(params=params, topic="salt-consumption")
-
-    async def async_set_waterstop(self, on_off=COMMAND_WATERSTOP_START):
-        """Request of type Consumptions."""
+    async def async_get_waterstop_standby(self):
+        """Get waterstop to standby."""
         params = self.waterstop_request
-        response = await self.get_request(params=params, topic=GROUP_WATERSTOP)
-        device_status = response.json()[DATA]
-        if (device_status == "0" and on_off == COMMAND_WATERSTOP_STOP) or (
-            device_status != "0" and on_off == COMMAND_WATERSTOP_START
-        ):
-            params = self.waterstop_request | {PARAMETER: on_off}
-            await self.get_request(
-                params=params, topic=GROUP_WATERSTOP + " set " + on_off
-            )
+        data = await self.get_request(params, "get waterstop to standby")
+        return data
 
-    async def async_get_water_consumtion_of_day(self):
-        """Get water consumption of day."""
-        return await self.async_get_water_consumption_request(
-            year=datetime.now().year,
-            month=datetime.now().month,
-            day=datetime.now().day,
-        )
+    async def async_get_salt_range(self):
+        """Get salt range."""
+        params = self.consumption_request | {COMMAND: COMMAND_SALT_RANGE}
+        data = await self.get_request(params, "salt range")
+        return data
 
-    async def async_get_water_consumtion_of_week(self):
-        """Get water consumption of week."""
-        return await self.async_get_water_consumption_request(
-            year=datetime.now().year,
-            month=datetime.now().month,
-            week_of_day=datetime.now(),
-        )
-
-    async def async_get_water_consumtion_of_month(self):
-        """Get water consumption of month."""
-        return await self.async_get_water_consumption_request(
-            year=datetime.now().year, month=datetime.now().month
-        )
-
-    async def async_get_water_consumtion_of_year(self):
-        """Get water consumption of year."""
-        return await self.async_get_water_consumption_request(year=datetime.now().year)
-
-    async def async_logout(self):
-        """Logout of Judo API."""
-        params = {
-            GROUP: GROUP_REGISTER,
-            COMMAND: COMMAD_LOGOUT,
-            TOKEN: self.token,
-        }
-        await self.get_request(params=params, topic=COMMAD_LOGOUT)
-        self.token = None
+    async def async_salt_quantity(self):
+        """Get salt quantity."""
+        params = self.consumption_request | {COMMAND: COMMAND_SALT_QUANTITY}
+        data = await self.get_request(params, "salt quantity")
+        return data

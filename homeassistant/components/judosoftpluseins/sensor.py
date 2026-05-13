@@ -13,7 +13,7 @@ from .configentry import MyConfigEntry
 from .const import REST_ITEMS
 from .coordinator import MyCoordinator
 from .entity import MyEntity
-from .item import Item
+from .item import EntityItem, Item
 
 logging.basicConfig()
 log: logging.Logger = logging.getLogger(name=__name__)
@@ -28,15 +28,17 @@ async def async_setup_entry(
     entries = []
 
     coordinator = config_entry.runtime_data.coordinator
-
-    for index, item in enumerate(REST_ITEMS):
-        mysensor = MySensorEntity(
-            config_entry=config_entry,
-            rest_item=item,
-            coordinator=coordinator,
-            idx=index,
-        )
-        entries.append(mysensor)
+    index = 0
+    for item in REST_ITEMS:
+        for entity in item.list_of_entites:
+            mysensor = MySensorEntity(
+                config_entry=config_entry,
+                entity_item=entity,
+                coordinator=coordinator,
+                idx=index,
+            )
+            entries.append(mysensor)
+            index += 1
 
     async_add_entities(
         entries,
@@ -62,17 +64,18 @@ class MySensorEntity(CoordinatorEntity, SensorEntity, MyEntity):
     def __init__(
         self,
         config_entry: MyConfigEntry,
-        rest_item: Item,
+        entity_item: EntityItem,
         coordinator: MyCoordinator,
         idx,
     ) -> None:
         """Initialize of MySensorEntity."""
         super().__init__(coordinator, context=idx)
         self.idx = idx
-        MyEntity.__init__(self, config_entry, rest_item, coordinator.rest_api)
+        self._entity_item = entity_item
+        MyEntity.__init__(self, config_entry, entity_item, coordinator.rest_api)
 
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
-        self._attr_native_value = self._rest_item.value
+        self._attr_native_value = self._entity_item.result
         self.async_write_ha_state()

@@ -1,11 +1,12 @@
 """Entities for projects."""
 
+from homeassistant.components.sensor.const import SensorStateClass
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity import Entity
 
 from .configentry import MyConfigEntry
 from .const import DEVICE, DOMAIN
-from .item import Item
+from .item import EntityItem
 from .judopluseinsrestservice import JudoRestAPI
 
 
@@ -27,12 +28,12 @@ class MyEntity(Entity):
     def __init__(
         self,
         config_entry: MyConfigEntry,
-        rest_item: Item,
+        entity_item: EntityItem,
         rest_api: JudoRestAPI,
     ) -> None:
         """Initialize the entity."""
         self._config_entry = config_entry
-        self._rest_item = rest_item
+        self._entity_item = entity_item
         self._rest_api = rest_api
 
         dev_postfix = "_"
@@ -42,14 +43,17 @@ class MyEntity(Entity):
 
         self._dev_device = DEVICE
 
-        self._attr_translation_key = self._rest_item.translation_key
+        self._attr_translation_key = self._entity_item.translation_key
+        self._attr_unit_of_measurement = self._entity_item.unit_of_measurement
+        self._attr_native_unit_of_measurement = self._entity_item.unit_of_measurement
+        self._attr_state_class = SensorStateClass.MEASUREMENT
 
         self._attr_unique_id = (
-            DOMAIN + "_" + self._dev_device + "_" + self._rest_item.translation_key
+            DOMAIN + "_" + self._dev_device + "_" + self._entity_item.translation_key
         )
 
         self._rest_api = rest_api
-        self._attr_icon = self._rest_item.icon
+        self._attr_icon = self._entity_item.icon
 
     def my_device_info(self) -> DeviceInfo:
         """Build the device info."""

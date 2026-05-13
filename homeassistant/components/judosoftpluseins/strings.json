@@ -1,16 +1,12 @@
 {
   "config": {
-    "abort": {
-      "no_devices_found": "[%key:common::config_flow::abort::no_devices_found%]",
-      "single_instance_allowed": "[%key:common::config_flow::abort::single_instance_allowed%]"
-    },
     "step": {
       "user": {
         "data": {
           "password": "password",
           "port": "port",
-          "scan_interval": "scan_interval",
-          "serial_number": "serial_number",
+          "scan_interval": "scaninterval",
+          "serial number": "serialnumber",
           "url": "url",
           "username": "username"
         }
@@ -30,23 +26,35 @@
   },
   "entity": {
     "sensor": {
+      "water_average": {
+        "name": "Water average"
+      },
+      "currently_raw_water": {
+        "name": "Currently raw water"
+      },
+      "currently_soft_water": {
+        "name": "Currently soft water"
+      },
+      "total_raw_water": {
+        "name": "Total raw water"
+      },
+      "total_soft_water": {
+        "name": "Total soft water"
+      },
+      "salt_range_in_days": {
+        "name": "Salt range in days"
+      },
+      "salt_range_in_weeks": {
+        "name": "Salt range in weeks"
+      },
       "salt_quantity": {
-        "name": "Salt quantity"
+        "name": "salt quantity"
       },
-      "salt_range": {
-        "name": "Salt range"
+      "salt_quantity_percent": {
+        "name": "salt quantity in percent"
       },
-      "water_daily": {
-        "name": "Water daily"
-      },
-      "water_monthly": {
-        "name": "Water monthly"
-      },
-      "water_weekly": {
-        "name": "Water weekly"
-      },
-      "water_yearly": {
-        "name": "Water yearly"
+      "standby_mode": {
+        "name": "Standby mode"
       }
     }
   }
