@@ -32,7 +32,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 ): cv.string,
                 vol.Optional(schema=CONF_PORT, default="8124"): cv.port,
                 vol.Optional(schema=CONF_USERNAME, default="admin"): cv.string,
-                vol.Optional(schema=CONF_PASSWORD, default="start1234"): cv.string,
+                vol.Optional(schema=CONF_PASSWORD, default="start123"): cv.string,
                 vol.Required(schema=SERIAL_NUMBER, default="1234"): cv.string,
                 vol.Optional(schema=CONF_SCAN_INTERVAL, default="60"): cv.string,
             }
