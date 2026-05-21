@@ -15,7 +15,10 @@ from .const import (
     COMMAND_WATER_AVERAGE,
     COMMAND_WATER_CURRENT,
     COMMAND_WATER_TOTAL,
-    REST_ITEMS,
+    COMMAND_NATURAL_WATERHARDNESS,
+    COMMAND_RESIDUAL_WATERHARDNESS,
+    COMMAND_REGENERATION,
+    REGENERATE,
 )
 from .item import Item
 from .judopluseinsrestservice import JudoRestAPI
@@ -51,6 +54,7 @@ class MyCoordinator(DataUpdateCoordinator):
         self._device = None
         self._restitems = api_items
         self._config_entry = config_entry
+        self._number_of_entities = sum(len(item.list_of_entites) for item in api_items)
 
     async def get_value(self, rest_item: Item):
         """Read a value from the rest API."""
@@ -67,8 +71,6 @@ class MyCoordinator(DataUpdateCoordinator):
                 await self._rest_api.async_get_total_water_consumption()
             )
             data.extend(temporary_data.split())
-        elif rest_item.rest_item_name == COMMAND_STANDBY:
-            data.append(await self._rest_api.async_get_waterstop_standby())
         elif rest_item.rest_item_name == COMMAND_SALT_QUANTITY:
             temporary_data = int(str(await self._rest_api.async_salt_quantity())) / 1000
             data.append(temporary_data)
@@ -83,6 +85,16 @@ class MyCoordinator(DataUpdateCoordinator):
                 "on"
                 if await self._rest_api.async_get_waterstop_standby() == "0"
                 else "off"
+            )
+        elif rest_item.rest_item_name == COMMAND_NATURAL_WATERHARDNESS:
+            data.append(await self._rest_api.async_get_natural_water_hardness())
+        elif rest_item.rest_item_name == COMMAND_RESIDUAL_WATERHARDNESS:
+            data.append(await self._rest_api.async_get_residual_water_hardness())
+        elif rest_item.rest_item_name == COMMAND_REGENERATION:
+            data.append(
+                REGENERATE
+                if await self._rest_api.async_get_is_judo_regenerate()
+                else "not " + REGENERATE
             )
         else:
             log.error("Unknown item: %s", rest_item.rest_item_name)
@@ -101,21 +113,11 @@ class MyCoordinator(DataUpdateCoordinator):
         """
         for rest_item in self._restitems:
             data = await self.get_value(rest_item)
-            if rest_item.rest_item_name in (
-                COMMAND_WATER_AVERAGE,
-                COMMAND_STANDBY,
-            ):
-                rest_item.list_of_entites[0].result = data[0]
-            elif rest_item.rest_item_name in (
-                COMMAND_WATER_CURRENT,
-                COMMAND_WATER_TOTAL,
-                COMMAND_SALT_RANGE,
-                COMMAND_SALT_QUANTITY,
-            ):
+            if len(rest_item.list_of_entites) > 1:
                 rest_item.list_of_entites[0].result = data[0]
                 rest_item.list_of_entites[1].result = data[1]
             else:
-                log.error("Unknown item: %s", rest_item.rest_item_name)
+                rest_item.list_of_entites[0].result = data[0]
         return self._restitems
 
     @property

@@ -31,9 +31,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     schema=CONF_URL, default="saturn.private.v4.mudal.net"
                 ): cv.string,
                 vol.Optional(schema=CONF_PORT, default="8124"): cv.port,
-                vol.Optional(schema=CONF_USERNAME, default="admin"): cv.string,
+                vol.Optional(schema=CONF_USERNAME, default="anka"): cv.string,
                 vol.Optional(schema=CONF_PASSWORD, default="start123"): cv.string,
-                vol.Required(schema=SERIAL_NUMBER, default="1234"): cv.string,
+                vol.Required(schema=SERIAL_NUMBER, default="193960"): cv.string,
                 vol.Optional(schema=CONF_SCAN_INTERVAL, default="60"): cv.string,
             }
         )
@@ -43,7 +43,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             try:
                 info = await validate_input(data=user_input)
-            except Exception:  # noqa: BLE001
+            except Exception:  # pylint: disable=broad-except
                 errors["base"] = "unknown error"
             else:
                 await self.async_set_unique_id(info[TITLE])

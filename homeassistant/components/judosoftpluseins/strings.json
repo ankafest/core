@@ -14,48 +14,29 @@
     }
   },
   "device": {
-    "dev_statistics": {
-      "name": "Judo Statistics{postfix}"
-    },
-    "dev_system": {
-      "name": "Judo System{postfix}"
-    },
-    "dev_unknown": {
-      "name": "Judo Unknown{postfix}"
-    }
+    "dev_statistics": {"name": "Judo Statistics{postfix}"},
+    "dev_system": {"name": "Judo System{postfix}"},
+    "dev_unknown": {"name": "Judo Unknown{postfix}"}
   },
   "entity": {
-    "sensor": {
-      "water_average": {
-        "name": "Water average"
-      },
-      "currently_raw_water": {
-        "name": "Currently raw water"
-      },
-      "currently_soft_water": {
-        "name": "Currently soft water"
-      },
-      "total_raw_water": {
-        "name": "Total raw water"
-      },
-      "total_soft_water": {
-        "name": "Total soft water"
-      },
-      "salt_range_in_days": {
-        "name": "Salt range in days"
-      },
-      "salt_range_in_weeks": {
-        "name": "Salt range in weeks"
-      },
-      "salt_quantity": {
-        "name": "salt quantity"
-      },
-      "salt_quantity_percent": {
-        "name": "salt quantity in percent"
-      },
-      "standby_mode": {
-        "name": "Standby mode"
-      }
+    "sensor": {"water_average": {"name": "Water average"},
+      "currently_raw_water": {"name": "Currently raw water"},
+      "currently_soft_water": {"name": "Currently soft water"},
+      "total_raw_water": {"name": "Total raw water"},
+      "total_soft_water": {"name": "Total soft water"},
+      "salt_range_in_days": {"name": "Salt range in days"},
+      "salt_range_in_weeks": {"name": "Salt range in weeks"},
+      "salt_quantity": {"name": "salt quantity"},
+      "salt_quantity_percent": {"name": "salt quantity in percent"},
+      "standby_mode": {"name": "water protection"},
+      "natural_water_hardness": {"name": "natural hardness"},
+      "residual_water_hardness": {"name": "residual hardness"},
+      "is_regenerating_running": {"name": "Is regenerating running"}
+    },
+    "button": {
+      "set_standby_mode_on": {"name": "Activate water protection"},
+      "set_standby_mode_off": {"name": "Deactivate water protection"},
+      "regeneration": {"name": "Regeneration"}
     }
   }
 }

@@ -1,6 +1,5 @@
 """Restobject. A REST object define: connect/disconnect, attach, get Numbers and put Switch "stop/start"."""
 
-from datetime import datetime
 from functools import partial
 import logging
 
@@ -20,9 +19,13 @@ from .const import (
     COMMAND,
     COMMAND_CONNECT,
     COMMAND_LOGIN,
+    COMMAND_NATURAL_WATERHARDNESS,
+    COMMAND_REGENERATION,
+    COMMAND_RESIDUAL_WATERHARDNESS,
     COMMAND_SALT_QUANTITY,
     COMMAND_SALT_RANGE,
     COMMAND_STANDBY,
+    COMMAND_START,
     COMMAND_WATER_AVERAGE,
     COMMAND_WATER_CURRENT,
     COMMAND_WATER_TOTAL,
@@ -30,9 +33,12 @@ from .const import (
     DEFAULT_DEVICE,
     GROUP,
     GROUP_CONSUMPTION,
+    GROUP_INFO,
     GROUP_REGISTER,
+    GROUP_SETTINGS,
     GROUP_WATERSTOP,
     PARAMETER,
+    REGENERATE,
     ROLE,
     ROLE_CUSTOMER,
     SERIAL_NUMBER,
@@ -70,19 +76,38 @@ class JudoRestAPI:
             CONF_PASSWORD: self.passwort,
             ROLE: ROLE_CUSTOMER,
         }
+
+        self.natural_hardness_params = {
+            GROUP: GROUP_INFO,
+            COMMAND: COMMAND_NATURAL_WATERHARDNESS,
+        }
+
+        self.residual_hardness_params = {
+            GROUP: GROUP_SETTINGS,
+            COMMAND: COMMAND_RESIDUAL_WATERHARDNESS,
+        }
+
         self.connect_param = {
             GROUP: GROUP_REGISTER,
             COMMAND: COMMAND_CONNECT,
             SERIAL_NUMBER: self.serial_nummber,
             PARAMETER: DEFAULT_DEVICE,
         }
+
         self.consumption_request = {
             GROUP: GROUP_CONSUMPTION,
         }
+
         self.waterstop_request = {
             GROUP: GROUP_WATERSTOP,
             COMMAND: COMMAND_STANDBY,
         }
+
+        self.regeneration_request = {
+            GROUP: GROUP_SETTINGS,
+            COMMAND: COMMAND_REGENERATION,
+        }
+
         self.error_message_response_status = (
             "RequestException after %1 response_status = %2 "
         )
@@ -114,7 +139,7 @@ class JudoRestAPI:
                 )
                 raise requests.exceptions.RequestException
         except GetRequestException:
-            log.info(self.error_during_get_request, "waterstop")
+            log.info(self.error_during_get_request, topic)
         return response.json()[DATA]
 
     async def async_login_and_connect(self):
@@ -198,3 +223,87 @@ class JudoRestAPI:
         params = self.consumption_request | {COMMAND: COMMAND_SALT_QUANTITY}
         data = await self.get_request(params, "salt quantity")
         return data
+
+    async def async_set_waterstop_standby(self, on_off_command):
+        """Set waterstop to standby."""
+        params = (
+            self.waterstop_request
+            | {COMMAND: COMMAND_STANDBY}
+            | {PARAMETER: on_off_command}
+            | {TOKEN: self.token}
+        )
+        try:
+            response = await self.homeassisant.async_add_executor_job(
+                partial(
+                    requests.get,
+                    url=self.base_url,
+                    params=params,
+                    timeout=120,
+                    verify=False,
+                )
+            )
+            if response.status_code != 200:
+                log.error(
+                    self.error_message_response_status,
+                    "waterstop: set standby " + on_off_command,
+                    response.status_code,
+                )
+                raise requests.exceptions.RequestException
+        except GetRequestException:
+            log.info(
+                self.error_during_get_request,
+                "waterstop: set standby " + on_off_command,
+            )
+        result = response.json()
+
+    async def async_get_natural_water_hardness(self):
+        """Get natural water hardness."""
+        params = self.natural_hardness_params
+        data = await self.get_request(params, "natural water hardness")
+        return data
+
+    async def async_get_residual_water_hardness(self):
+        """Get residual water hardness."""
+        params = self.residual_hardness_params
+        data = await self.get_request(params, "residual water hardness")
+        return data
+
+    async def async_get_is_judo_regenerate(self):
+        """Get if judo is currently regenerating."""
+        params = self.regeneration_request
+        data = await self.get_request(params, "regeneration status")
+        if data.find(REGENERATE) != -1:
+            return True
+        else:
+            return False
+
+    async def async_set_regeneration(self):
+        """Set regeneration."""
+        params = (
+            self.regeneration_request
+            | {COMMAND: COMMAND_REGENERATION}
+            | {PARAMETER: COMMAND_START}
+            | {TOKEN: self.token}
+        )
+        try:
+            response = await self.homeassisant.async_add_executor_job(
+                partial(
+                    requests.get,
+                    url=self.base_url,
+                    params=params,
+                    timeout=300,
+                    verify=False,
+                )
+            )
+            if response.status_code != 200:
+                log.error(
+                    self.error_message_response_status,
+                    "set regeneration " + COMMAND_START,
+                    response.status_code,
+                )
+                raise requests.exceptions.RequestException
+        except GetRequestException:
+            log.info(
+                self.error_during_get_request,
+                "set regeneration " + COMMAND_START,
+            )

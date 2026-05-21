@@ -44,9 +44,12 @@ class MyEntity(Entity):
         self._dev_device = DEVICE
 
         self._attr_translation_key = self._entity_item.translation_key
-        self._attr_unit_of_measurement = self._entity_item.unit_of_measurement
-        self._attr_native_unit_of_measurement = self._entity_item.unit_of_measurement
-        self._attr_state_class = SensorStateClass.MEASUREMENT
+        if self._entity_item.unit_of_measurement != " ":
+            self._attr_state_class = SensorStateClass.MEASUREMENT
+            self._attr_unit_of_measurement = self._entity_item.unit_of_measurement
+            self._attr_native_unit_of_measurement = (
+                self._entity_item.unit_of_measurement
+            )
 
         self._attr_unique_id = (
             DOMAIN + "_" + self._dev_device + "_" + self._entity_item.translation_key

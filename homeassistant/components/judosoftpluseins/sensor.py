@@ -13,7 +13,7 @@ from .configentry import MyConfigEntry
 from .const import REST_ITEMS
 from .coordinator import MyCoordinator
 from .entity import MyEntity
-from .item import EntityItem, Item
+from .item import EntityItem
 
 logging.basicConfig()
 log: logging.Logger = logging.getLogger(name=__name__)

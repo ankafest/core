@@ -25,12 +25,32 @@
         }
     },
     "entity": {
+        "button": {
+            "regeneration": {
+                "name": "Regeneration"
+            },
+            "set_standby_mode_off": {
+                "name": "Deactivate water protection"
+            },
+            "set_standby_mode_on": {
+                "name": "Activate water protection"
+            }
+        },
         "sensor": {
             "currently_raw_water": {
                 "name": "Currently raw water"
             },
             "currently_soft_water": {
                 "name": "Currently soft water"
+            },
+            "is_regenerating_running": {
+                "name": "Is regenerating running"
+            },
+            "natural_water_hardness": {
+                "name": "natural hardness"
+            },
+            "residual_water_hardness": {
+                "name": "residual hardness"
             },
             "salt_quantity": {
                 "name": "salt quantity"
@@ -45,7 +65,7 @@
                 "name": "Salt range in weeks"
             },
             "standby_mode": {
-                "name": "Standby mode"
+                "name": "water protection"
             },
             "total_raw_water": {
                 "name": "Total raw water"
