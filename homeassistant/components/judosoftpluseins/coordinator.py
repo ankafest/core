@@ -9,16 +9,15 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .configentry import MyConfigEntry
 from .const import (
+    COMMAND_NATURAL_WATERHARDNESS,
+    COMMAND_REGENERATION,
+    COMMAND_RESIDUAL_WATERHARDNESS,
     COMMAND_SALT_QUANTITY,
     COMMAND_SALT_RANGE,
     COMMAND_STANDBY,
     COMMAND_WATER_AVERAGE,
     COMMAND_WATER_CURRENT,
     COMMAND_WATER_TOTAL,
-    COMMAND_NATURAL_WATERHARDNESS,
-    COMMAND_RESIDUAL_WATERHARDNESS,
-    COMMAND_REGENERATION,
-    REGENERATE,
 )
 from .item import Item
 from .judopluseinsrestservice import JudoRestAPI
@@ -92,9 +91,9 @@ class MyCoordinator(DataUpdateCoordinator):
             data.append(await self._rest_api.async_get_residual_water_hardness())
         elif rest_item.rest_item_name == COMMAND_REGENERATION:
             data.append(
-                REGENERATE
+                "True"
                 if await self._rest_api.async_get_is_judo_regenerate()
-                else "not " + REGENERATE
+                else "False"
             )
         else:
             log.error("Unknown item: %s", rest_item.rest_item_name)

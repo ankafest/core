@@ -4,15 +4,12 @@
 class EntityItem:
     """Entity item definition."""
 
-    def __init__(
-        self, translation_key: str, icon: str, format: str, unit: str = " "
-    ) -> None:
+    def __init__(self, translation_key: str, icon: str, unit: str = " ") -> None:
         """Init the entity item definition."""
         self._translation_key = translation_key
         self._text = " "
         self._icon = icon
         self._unit_of_measurement = unit
-        self._format = format
 
     @property
     def translation_key(self) -> str:
@@ -23,16 +20,6 @@ class EntityItem:
     def translation_key(self, value: str) -> None:
         """Set the translation key."""
         self._translation_key = value
-
-    @property
-    def format(self) -> str:
-        """Return the format."""
-        return self._format
-
-    @format.setter
-    def format(self, value: str) -> None:
-        """Set the format."""
-        self._format = value
 
     @property
     def result(self) -> str:

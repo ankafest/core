@@ -36,6 +36,11 @@
                 "name": "Activate water protection"
             }
         },
+        "number": {
+            "set_residual_water_hardness": {
+                "name": "Residual hardness"
+            }
+        },
         "sensor": {
             "currently_raw_water": {
                 "name": "Currently raw water"

@@ -60,7 +60,7 @@ TRANSLATION_KEY_SALT_RANGE_WEEKS = "salt_range_in_weeks"
 TRANSLATION_KEY_SALT_QUANTITY_PERCENT = "salt_quantity_percent"
 TRANSLATION_KEY_SALT_QUANTITY = "salt_quantity"
 TRANSLATION_KEY_NATURAL_WATERHARDNESS = "natural_water_hardness"
-TRANSLATION_KEY_RESIDUAL_WATERHARDNESS = "residual_water_hardness"
+TRANSLATION_KEY_SET_RESIDUAL_WATERHARDNESS = "set_residual_water_hardness"
 TRANSLATION_KEY_STANDBY_MODE = "standby_mode"
 TRANSLATION_KEY_SET_STANDBY_ON = "set_standby_mode_on"
 TRANSLATION_KEY_SET_STANDBY_OFF = "set_standby_mode_off"
@@ -77,6 +77,7 @@ REGENERATE = "regenerate"
 """For Types of Entites"""
 SENSOR_TYPE = "sensor"
 BUTTON_TYPE = "button"
+NUMBER_TYPE = "number"
 """For output"""
 DAYS = "d"
 WEEKS = "w"
@@ -88,7 +89,6 @@ LIST_OF_ENTITYS_FOR_WATER_AVERAGE: list[EntityItem] = [
     EntityItem(
         translation_key=TRANSLATION_KEY_WATER_AVERAGE,
         icon="mdi:water",
-        format=SENSOR_TYPE,
         unit=LITER,
     )
 ]
@@ -97,13 +97,11 @@ LIST_OF_CURRENT_WATTER_CONSUMPTION: list[EntityItem] = [
     EntityItem(
         translation_key=TRANSLATION_KEY_CURRENT_WATER_RAW,
         icon="mdi:water",
-        format=SENSOR_TYPE,
         unit=LITER,
     ),
     EntityItem(
         translation_key=TRANSLATION_KEY_CURRENT_WATER_SOFT,
         icon="mdi:water",
-        format=SENSOR_TYPE,
         unit=LITER,
     ),
 ]
@@ -112,13 +110,11 @@ LIST_OF_TOTAL_WATTER_CONSUMPTION: list[EntityItem] = [
     EntityItem(
         translation_key=TRANSLATION_KEY_TOTAL_WATER_RAW,
         icon="mdi:water",
-        format=SENSOR_TYPE,
         unit=LITER,
     ),
     EntityItem(
         translation_key=TRANSLATION_KEY_TOTAL_WATER_SOFT,
         icon="mdi:water",
-        format=SENSOR_TYPE,
         unit=LITER,
     ),
 ]
@@ -127,13 +123,11 @@ LIST_OF_SALT_QUANTITY: list[EntityItem] = [
     EntityItem(
         translation_key=TRANSLATION_KEY_SALT_QUANTITY,
         icon="mdi:water-opacity",
-        format=SENSOR_TYPE,
         unit=KILOGRAM,
     ),
     EntityItem(
         translation_key=TRANSLATION_KEY_SALT_QUANTITY_PERCENT,
         icon="mdi:water-percent",
-        format=SENSOR_TYPE,
         unit=PERCENT,
     ),
 ]
@@ -142,13 +136,11 @@ LIST_OF_SALT_RANGE: list[EntityItem] = [
     EntityItem(
         translation_key=TRANSLATION_KEY_SALT_RANGE_DAYS,
         icon="mdi:water-opacity",
-        format=SENSOR_TYPE,
         unit=DAYS,
     ),
     EntityItem(
         translation_key=TRANSLATION_KEY_SALT_RANGE_WEEKS,
         icon="mdi:water-opacity",
-        format=SENSOR_TYPE,
         unit=WEEKS,
     ),
 ]
@@ -157,7 +149,6 @@ LIST_OF_STANDBY_MODE: list[EntityItem] = [
     EntityItem(
         translation_key=TRANSLATION_KEY_STANDBY_MODE,
         icon="mdi:water-off",
-        format=SENSOR_TYPE,
         unit=" ",
     )
 ]
@@ -166,7 +157,6 @@ LIST_OF_STANDBY_MODE_ON: list[EntityItem] = [
     EntityItem(
         translation_key=TRANSLATION_KEY_SET_STANDBY_ON,
         icon="mdi:water",
-        format=BUTTON_TYPE,
         unit=" ",
     )
 ]
@@ -175,7 +165,6 @@ LIST_OF_IS_REGENERATING_RUNNING: list[EntityItem] = [
     EntityItem(
         translation_key=TRANSLATION_IS_REGENERATING_RUNNING,
         icon="mdi:water-polo",
-        format=SENSOR_TYPE,
         unit=" ",
     )
 ]
@@ -184,7 +173,6 @@ LIST_OF_STANDBY_MODE_OFF: list[EntityItem] = [
     EntityItem(
         translation_key=TRANSLATION_KEY_SET_STANDBY_OFF,
         icon="mdi:water-remove",
-        format=BUTTON_TYPE,
         unit=" ",
     )
 ]
@@ -193,16 +181,14 @@ LIST_OF_NATURAL_WATERHARDNESS: list[EntityItem] = [
     EntityItem(
         translation_key=TRANSLATION_KEY_NATURAL_WATERHARDNESS,
         icon="mdi:water-opacity",
-        format=SENSOR_TYPE,
         unit="dH",
     )
 ]
 
 LIST_OF_RESIDUAL_WATERHARDNESS: list[EntityItem] = [
     EntityItem(
-        translation_key=TRANSLATION_KEY_RESIDUAL_WATERHARDNESS,
+        translation_key=TRANSLATION_KEY_SET_RESIDUAL_WATERHARDNESS,
         icon="mdi:water-opacity",
-        format=SENSOR_TYPE,
         unit="dH",
     )
 ]
@@ -211,37 +197,62 @@ LIST_OF_WATERREGENERATION: list[EntityItem] = [
     EntityItem(
         translation_key=COMMAND_REGENERATION,
         icon="mdi:water-polo",
-        format=BUTTON_TYPE,
         unit=" ",
+    )
+]
+
+LIST_OF_SET_RESIDUAL_WATERHARDNESS: list[EntityItem] = [
+    EntityItem(
+        translation_key=TRANSLATION_KEY_SET_RESIDUAL_WATERHARDNESS,
+        icon="mdi:water-opacity",
+        unit="dH",
     )
 ]
 
 REST_ITEMS: list[Item] = [
     Item(
         rest_item_name=COMMAND_WATER_CURRENT,
+        format=SENSOR_TYPE,
         list_of_entites=LIST_OF_CURRENT_WATTER_CONSUMPTION,
     ),
     Item(
         rest_item_name=COMMAND_WATER_AVERAGE,
+        format=SENSOR_TYPE,
         list_of_entites=LIST_OF_ENTITYS_FOR_WATER_AVERAGE,
     ),
     Item(
         rest_item_name=COMMAND_WATER_TOTAL,
+        format=SENSOR_TYPE,
         list_of_entites=LIST_OF_TOTAL_WATTER_CONSUMPTION,
     ),
-    Item(rest_item_name=COMMAND_SALT_QUANTITY, list_of_entites=LIST_OF_SALT_QUANTITY),
-    Item(rest_item_name=COMMAND_SALT_RANGE, list_of_entites=LIST_OF_SALT_RANGE),
-    Item(rest_item_name=COMMAND_STANDBY, list_of_entites=LIST_OF_STANDBY_MODE),
+    Item(
+        rest_item_name=COMMAND_SALT_QUANTITY,
+        format=SENSOR_TYPE,
+        list_of_entites=LIST_OF_SALT_QUANTITY,
+    ),
+    Item(
+        rest_item_name=COMMAND_SALT_RANGE,
+        format=SENSOR_TYPE,
+        list_of_entites=LIST_OF_SALT_RANGE,
+    ),
+    Item(
+        rest_item_name=COMMAND_STANDBY,
+        format=SENSOR_TYPE,
+        list_of_entites=LIST_OF_STANDBY_MODE,
+    ),
     Item(
         rest_item_name=COMMAND_NATURAL_WATERHARDNESS,
+        format=SENSOR_TYPE,
         list_of_entites=LIST_OF_NATURAL_WATERHARDNESS,
     ),
     Item(
         rest_item_name=COMMAND_RESIDUAL_WATERHARDNESS,
+        format=NUMBER_TYPE,
         list_of_entites=LIST_OF_RESIDUAL_WATERHARDNESS,
     ),
     Item(
         rest_item_name=COMMAND_REGENERATION,
+        format=SENSOR_TYPE,
         list_of_entites=LIST_OF_IS_REGENERATING_RUNNING,
     ),
 ]
@@ -249,13 +260,17 @@ REST_ITEMS: list[Item] = [
 BUTTON_ITEMS: list[Item] = [
     Item(
         rest_item_name=STANDBY_ON,
+        format=BUTTON_TYPE,
         list_of_entites=LIST_OF_STANDBY_MODE_ON,
     ),
     Item(
         rest_item_name=STANDBY_OFF,
+        format=BUTTON_TYPE,
         list_of_entites=LIST_OF_STANDBY_MODE_OFF,
     ),
     Item(
-        rest_item_name=COMMAND_REGENERATION, list_of_entites=LIST_OF_WATERREGENERATION
+        rest_item_name=COMMAND_REGENERATION,
+        format=BUTTON_TYPE,
+        list_of_entites=LIST_OF_WATERREGENERATION,
     ),
 ]

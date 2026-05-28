@@ -37,6 +37,9 @@
       "set_standby_mode_on": {"name": "Activate water protection"},
       "set_standby_mode_off": {"name": "Deactivate water protection"},
       "regeneration": {"name": "Regeneration"}
+    },
+    "number": {
+      "set_residual_water_hardness": {"name": "Residual hardness"}
     }
   }
 }

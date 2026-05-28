@@ -307,3 +307,34 @@ class JudoRestAPI:
                 self.error_during_get_request,
                 "set regeneration " + COMMAND_START,
             )
+
+    async def async_set_residual_waterhardness(self, hardness):
+        """Set residual water hardness."""
+        params = (
+            self.residual_hardness_params
+            | {COMMAND: COMMAND_RESIDUAL_WATERHARDNESS}
+            | {PARAMETER: hardness}
+            | {TOKEN: self.token}
+        )
+        try:
+            response = await self.homeassisant.async_add_executor_job(
+                partial(
+                    requests.get,
+                    url=self.base_url,
+                    params=params,
+                    timeout=120,
+                    verify=False,
+                )
+            )
+            if response.status_code != 200:
+                log.error(
+                    self.error_message_response_status,
+                    "set residual water hardness to " + str(hardness),
+                    response.status_code,
+                )
+                raise requests.exceptions.RequestException
+        except GetRequestException:
+            log.info(
+                self.error_during_get_request,
+                "set residual water hardness to " + str(hardness),
+            )
