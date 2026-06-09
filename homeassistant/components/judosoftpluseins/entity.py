@@ -65,6 +65,7 @@ class MyEntity(Entity):
             "sw_version": "Device_SW_Version",
             "model": "Device_model",
             "manufacturer": "Judo",
+            "name": DEVICE,
         }
 
     @property

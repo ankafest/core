@@ -16,9 +16,11 @@ from homeassistant.const import (
 from homeassistant.core import HomeAssistant
 
 from .const import (
+    CLOSE,
     COMMAND,
     COMMAND_CONNECT,
     COMMAND_LOGIN,
+    COMMAND_LOGOUT,
     COMMAND_NATURAL_WATERHARDNESS,
     COMMAND_REGENERATION,
     COMMAND_RESIDUAL_WATERHARDNESS,
@@ -26,6 +28,7 @@ from .const import (
     COMMAND_SALT_RANGE,
     COMMAND_STANDBY,
     COMMAND_START,
+    COMMAND_TURN_ON_OF_THE_WATER,
     COMMAND_WATER_AVERAGE,
     COMMAND_WATER_CURRENT,
     COMMAND_WATER_TOTAL,
@@ -37,6 +40,7 @@ from .const import (
     GROUP_REGISTER,
     GROUP_SETTINGS,
     GROUP_WATERSTOP,
+    OPEN,
     PARAMETER,
     REGENERATE,
     ROLE,
@@ -77,6 +81,11 @@ class JudoRestAPI:
             ROLE: ROLE_CUSTOMER,
         }
 
+        self.logout_param = {
+            GROUP: GROUP_REGISTER,
+            COMMAND: COMMAND_LOGOUT,
+        }
+
         self.natural_hardness_params = {
             GROUP: GROUP_INFO,
             COMMAND: COMMAND_NATURAL_WATERHARDNESS,
@@ -108,6 +117,11 @@ class JudoRestAPI:
             COMMAND: COMMAND_REGENERATION,
         }
 
+        self.water_on_off_request = {
+            GROUP: GROUP_WATERSTOP,
+            COMMAND: COMMAND_TURN_ON_OF_THE_WATER,
+        }
+
         self.error_message_response_status = (
             "RequestException after %1 response_status = %2 "
         )
@@ -121,6 +135,7 @@ class JudoRestAPI:
     async def get_request(self, params, topic):
         """Get-Request for all judo-requests."""
         params = params | {TOKEN: self.token}
+        log.info(f"Sending GET request for %s {self.token}", topic)
         try:
             response = await self.homeassisant.async_add_executor_job(
                 partial(
@@ -266,6 +281,7 @@ class JudoRestAPI:
         """Get residual water hardness."""
         params = self.residual_hardness_params
         data = await self.get_request(params, "residual water hardness")
+        logging.getLogger(__name__).debug("Residual water hardness: %s", data)
         return data
 
     async def async_get_is_judo_regenerate(self):
@@ -338,3 +354,21 @@ class JudoRestAPI:
                 self.error_during_get_request,
                 "set residual water hardness to " + str(hardness),
             )
+
+    async def async_logout(self):
+        """Logout from Judo API."""
+        log.info("Logging out from Judo API")
+        params = self.logout_param
+        await self.get_request(params, "logout from Judo API")
+
+    async def async_turn_the_water(self, parameter):
+        params = self.water_on_off_request | {PARAMETER: parameter}
+        await self.get_request(
+            params, f"turn {'on' if parameter == OPEN else 'off'} the water"
+        )
+
+    async def async_current_water_valve(self):
+        """Get current water valve status."""
+        params = self.water_on_off_request
+        data = await self.get_request(params, "current water valve status")
+        return data

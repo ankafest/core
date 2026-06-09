@@ -6,7 +6,7 @@ from .entity_item import EntityItem
 from .item import Item
 
 DOMAIN = "judosoftpluseins"
-DEVICE = "i-soft plus"
+DEVICE = "Judo iSoft plus"
 
 """Constants for the Judo (Rest-Service i-soft plus) integration."""
 GROUP_REGISTER = "register"
@@ -22,7 +22,7 @@ PARAMETER = "parameter"
 TOKEN = "token"
 ROLE = "role"
 ROLE_CUSTOMER = "customer"
-DEFAULT_DEVICE = "i-soft plus"
+DEFAULT_DEVICE = "Judo iSoft plus"
 SERIAL_NUMBER = "serial number"
 USER = "user"
 DAY = "day"
@@ -40,14 +40,17 @@ COMMAND_SALT_QUANTITY = "salt quantity"
 COMMAND_REGENERATION = "regeneration"
 COMMAND_SALT_RANGE = "salt range"
 COMMAND_LOGIN = "login"
-COMMAD_LOGOUT = "logout"
+COMMAND_LOGOUT = "logout"
 COMMAND_CONNECT = "connect"
 COMMAND_DISCONNECT = "disconnect"
 COMMAND_STANDBY = "standby"
 COMMAND_NATURAL_WATERHARDNESS = "natural hardness"
 COMMAND_RESIDUAL_WATERHARDNESS = "residual hardness"
+COMMAND_TURN_ON_OF_THE_WATER = "valve"
 STANDBY_ON = "standby on"
 STANDBY_OFF = "standby off"
+TURN_OFF_THE_WATER = "turn off the water"
+TURN_ON_THE_WATER = "turn on the water"
 TRANSLATION_IS_REGENERATING_RUNNING = "is_regenerating_running"
 TRANSLATION_KEY_WATER_AVERAGE = "water_average"
 TRANSLATION_KEY_CURRENT_WATER_RAW = "currently_raw_water"
@@ -60,10 +63,13 @@ TRANSLATION_KEY_SALT_RANGE_WEEKS = "salt_range_in_weeks"
 TRANSLATION_KEY_SALT_QUANTITY_PERCENT = "salt_quantity_percent"
 TRANSLATION_KEY_SALT_QUANTITY = "salt_quantity"
 TRANSLATION_KEY_NATURAL_WATERHARDNESS = "natural_water_hardness"
-TRANSLATION_KEY_SET_RESIDUAL_WATERHARDNESS = "set_residual_water_hardness"
+TRANSLATION_KEY_RESIDUAL_WATERHARDNESS = "residual_water_hardness"
 TRANSLATION_KEY_STANDBY_MODE = "standby_mode"
 TRANSLATION_KEY_SET_STANDBY_ON = "set_standby_mode_on"
 TRANSLATION_KEY_SET_STANDBY_OFF = "set_standby_mode_off"
+TRANSLATION_KEY_TURN_OFF_THE_WATER = "turn_off_the_water"
+TRANSLATION_KEY_TURN_ON_THE_WATER = "turn_on_the_water"
+TRANSLATION_KEY_CURRENT_WATER_VALVE = "current_water_valve"
 """For RestService Waterstop Standby-Parameter"""
 COMMAND_START = "start"
 COMMAND_STOP = "stop"
@@ -73,6 +79,10 @@ STATUS_FAILED = "failed"
 STATUS = "status"
 TITLE = "title"
 REGENERATE = "regenerate"
+OPEN = "open"
+CLOSE = "close"
+START = "start"
+STOP = "stop"
 
 """For Types of Entites"""
 SENSOR_TYPE = "sensor"
@@ -187,11 +197,20 @@ LIST_OF_NATURAL_WATERHARDNESS: list[EntityItem] = [
 
 LIST_OF_RESIDUAL_WATERHARDNESS: list[EntityItem] = [
     EntityItem(
-        translation_key=TRANSLATION_KEY_SET_RESIDUAL_WATERHARDNESS,
+        translation_key=TRANSLATION_KEY_RESIDUAL_WATERHARDNESS,
         icon="mdi:water-opacity",
         unit="dH",
     )
 ]
+
+LIST_OF_GET_RESIDUAL_WATERHARDNESS: list[EntityItem] = [
+    EntityItem(
+        translation_key=TRANSLATION_KEY_RESIDUAL_WATERHARDNESS,
+        icon="mdi:water-opacity",
+        unit="dH",
+    )
+]
+
 
 LIST_OF_WATERREGENERATION: list[EntityItem] = [
     EntityItem(
@@ -203,9 +222,33 @@ LIST_OF_WATERREGENERATION: list[EntityItem] = [
 
 LIST_OF_SET_RESIDUAL_WATERHARDNESS: list[EntityItem] = [
     EntityItem(
-        translation_key=TRANSLATION_KEY_SET_RESIDUAL_WATERHARDNESS,
+        translation_key=TRANSLATION_KEY_RESIDUAL_WATERHARDNESS,
         icon="mdi:water-opacity",
         unit="dH",
+    )
+]
+
+LIST_OF_TURN_OFF_THE_WATER: list[EntityItem] = [
+    EntityItem(
+        translation_key=TRANSLATION_KEY_TURN_OFF_THE_WATER,
+        icon="mdi:water-pump_off",
+        unit=" ",
+    )
+]
+
+LIST_OF_TURN_ON_THE_WATER: list[EntityItem] = [
+    EntityItem(
+        translation_key=TRANSLATION_KEY_TURN_ON_THE_WATER,
+        icon="mdi:water-pump",
+        unit=" ",
+    )
+]
+
+LIST_OF_CURRENT_WATER_VALVE: list[EntityItem] = [
+    EntityItem(
+        translation_key=TRANSLATION_KEY_CURRENT_WATER_VALVE,
+        icon="mdi:valve",
+        unit=" ",
     )
 ]
 
@@ -248,12 +291,22 @@ REST_ITEMS: list[Item] = [
     Item(
         rest_item_name=COMMAND_RESIDUAL_WATERHARDNESS,
         format=NUMBER_TYPE,
-        list_of_entites=LIST_OF_RESIDUAL_WATERHARDNESS,
+        list_of_entites=LIST_OF_SET_RESIDUAL_WATERHARDNESS,
+    ),
+    Item(
+        rest_item_name=COMMAND_RESIDUAL_WATERHARDNESS,
+        format=SENSOR_TYPE,
+        list_of_entites=LIST_OF_GET_RESIDUAL_WATERHARDNESS,
     ),
     Item(
         rest_item_name=COMMAND_REGENERATION,
         format=SENSOR_TYPE,
         list_of_entites=LIST_OF_IS_REGENERATING_RUNNING,
+    ),
+    Item(
+        rest_item_name=COMMAND_TURN_ON_OF_THE_WATER,
+        format=SENSOR_TYPE,
+        list_of_entites=LIST_OF_CURRENT_WATER_VALVE,
     ),
 ]
 
@@ -272,5 +325,15 @@ BUTTON_ITEMS: list[Item] = [
         rest_item_name=COMMAND_REGENERATION,
         format=BUTTON_TYPE,
         list_of_entites=LIST_OF_WATERREGENERATION,
+    ),
+    Item(
+        rest_item_name=TURN_OFF_THE_WATER,
+        format=BUTTON_TYPE,
+        list_of_entites=LIST_OF_TURN_OFF_THE_WATER,
+    ),
+    Item(
+        rest_item_name=TURN_ON_THE_WATER,
+        format=BUTTON_TYPE,
+        list_of_entites=LIST_OF_TURN_ON_THE_WATER,
     ),
 ]

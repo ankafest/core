@@ -34,14 +34,23 @@
             },
             "set_standby_mode_on": {
                 "name": "Activate water protection"
+            },
+            "turn_off_of_the_water": {
+                "name": "Turn off of the water"
+            },
+            "turn_on_of_the_water": {
+                "name": "Turn on of the water"
             }
         },
         "number": {
-            "set_residual_water_hardness": {
+            "residual_water_hardness": {
                 "name": "Residual hardness"
             }
         },
         "sensor": {
+            "current_water_valve": {
+                "name": "Current water valve"
+            },
             "currently_raw_water": {
                 "name": "Currently raw water"
             },
@@ -82,5 +91,6 @@
                 "name": "Water average"
             }
         }
-    }
+    },
+    "title": "JudoSoftPlusEins configuration"
 }

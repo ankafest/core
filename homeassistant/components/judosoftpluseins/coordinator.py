@@ -15,6 +15,7 @@ from .const import (
     COMMAND_SALT_QUANTITY,
     COMMAND_SALT_RANGE,
     COMMAND_STANDBY,
+    COMMAND_TURN_ON_OF_THE_WATER,
     COMMAND_WATER_AVERAGE,
     COMMAND_WATER_CURRENT,
     COMMAND_WATER_TOTAL,
@@ -57,6 +58,7 @@ class MyCoordinator(DataUpdateCoordinator):
 
     async def get_value(self, rest_item: Item):
         """Read a value from the rest API."""
+        log.info("Getting value for item: %s", rest_item.rest_item_name)
         data = []
         if rest_item.rest_item_name == COMMAND_WATER_AVERAGE:
             data.append(await self._rest_api.async_get_average_water_consumption())
@@ -71,6 +73,7 @@ class MyCoordinator(DataUpdateCoordinator):
             )
             data.extend(temporary_data.split())
         elif rest_item.rest_item_name == COMMAND_SALT_QUANTITY:
+            log.info("Getting salt quantity")
             temporary_data = int(str(await self._rest_api.async_salt_quantity())) / 1000
             data.append(temporary_data)
             data.append(str(float(temporary_data) * 100 / 50))
@@ -95,6 +98,8 @@ class MyCoordinator(DataUpdateCoordinator):
                 if await self._rest_api.async_get_is_judo_regenerate()
                 else "False"
             )
+        elif rest_item.rest_item_name == COMMAND_TURN_ON_OF_THE_WATER:
+            data.append(await self._rest_api.async_current_water_valve())
         else:
             log.error("Unknown item: %s", rest_item.rest_item_name)
             return data

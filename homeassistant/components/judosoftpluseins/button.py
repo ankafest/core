@@ -10,7 +10,11 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .configentry import MyConfigEntry
 from .const import (
     BUTTON_ITEMS,
+    CLOSE,
     COMMAND_REGENERATION,
+    OPEN,
+    START,
+    STOP,
     TRANSLATION_KEY_SET_STANDBY_OFF,
     TRANSLATION_KEY_SET_STANDBY_ON,
 )
@@ -73,11 +77,15 @@ class WaterstopButtonEntity(CoordinatorEntity, ButtonEntity, MyEntity):
     async def async_press(self) -> None:
         """Turn the entity on."""
         if self._entity_item.translation_key == TRANSLATION_KEY_SET_STANDBY_OFF:
-            await self._rest_api.async_set_waterstop_standby(on_off_command="start")
+            await self._rest_api.async_set_waterstop_standby(on_off_command=START)
         elif self._entity_item.translation_key == TRANSLATION_KEY_SET_STANDBY_ON:
-            await self._rest_api.async_set_waterstop_standby(on_off_command="stop")
+            await self._rest_api.async_set_waterstop_standby(on_off_command=STOP)
         elif self._entity_item.translation_key == COMMAND_REGENERATION:
             await self.async_regerate()
+        elif self._entity_item.translation_key == TRANSLATION_KEY_SET_STANDBY_OFF:
+            await self._rest_api.async_turn_the_water(parameter=CLOSE)
+        elif self._entity_item.translation_key == TRANSLATION_KEY_SET_STANDBY_ON:
+            await self._rest_api.async_turn_the_water(parameter=OPEN)
 
     async def async_regerate(self) -> None:
         """Start the regeneration."""
