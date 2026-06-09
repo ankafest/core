@@ -4,6 +4,8 @@ from homeassistant.const import PERCENTAGE, UnitOfMass, UnitOfVolume
 
 from .entity_item import EntityItem
 from .item import Item
+from .scene_item import SceneItem
+from .scene_rest_item import SceneRestItem
 
 DOMAIN = "judosoftpluseins"
 DEVICE = "Judo iSoft plus"
@@ -23,6 +25,7 @@ TOKEN = "token"
 ROLE = "role"
 ROLE_CUSTOMER = "customer"
 DEFAULT_DEVICE = "Judo iSoft plus"
+DEVICE_FOR_CONNECT = "i-soft plus"
 SERIAL_NUMBER = "serial number"
 USER = "user"
 DAY = "day"
@@ -83,6 +86,11 @@ OPEN = "open"
 CLOSE = "close"
 START = "start"
 STOP = "stop"
+"""Scene name"""
+SCENE_GARTEN_IRRIGATION = "garten_irrigation"
+SCENE_POOL_FILL_UP = "pool_fill_up"
+SCENE_REFILL_BOILER_HEATING = "refill_boiler_heating"
+SCENE_NORMAL_WATERSTATUS = "normal_waterstatus"
 
 """For Types of Entites"""
 SENSOR_TYPE = "sensor"
@@ -231,7 +239,7 @@ LIST_OF_SET_RESIDUAL_WATERHARDNESS: list[EntityItem] = [
 LIST_OF_TURN_OFF_THE_WATER: list[EntityItem] = [
     EntityItem(
         translation_key=TRANSLATION_KEY_TURN_OFF_THE_WATER,
-        icon="mdi:water-pump_off",
+        icon="mdi:water-pump-off",
         unit=" ",
     )
 ]
@@ -247,7 +255,7 @@ LIST_OF_TURN_ON_THE_WATER: list[EntityItem] = [
 LIST_OF_CURRENT_WATER_VALVE: list[EntityItem] = [
     EntityItem(
         translation_key=TRANSLATION_KEY_CURRENT_WATER_VALVE,
-        icon="mdi:valve",
+        icon="mdi:water",
         unit=" ",
     )
 ]
@@ -310,6 +318,25 @@ REST_ITEMS: list[Item] = [
     ),
 ]
 
+SCENE_REST_ITEMS_GARTENWATER_IRRIGATION: list[SceneRestItem] = [
+    SceneRestItem(rest_command=COMMAND_RESIDUAL_WATERHARDNESS, value="20"),
+    SceneRestItem(rest_command=COMMAND_STANDBY, value=CLOSE),
+]
+
+SCENE_REST_ITEMS_POOL_REFILL: list[SceneRestItem] = [
+    SceneRestItem(rest_command=COMMAND_RESIDUAL_WATERHARDNESS, value="20"),
+    SceneRestItem(rest_command=COMMAND_STANDBY, value=CLOSE),
+]
+SCENE_REST_ITEMS_REFILL_BOILER_HEATING: list[SceneRestItem] = [
+    SceneRestItem(rest_command=COMMAND_RESIDUAL_WATERHARDNESS, value="5"),
+    SceneRestItem(rest_command=COMMAND_STANDBY, value=CLOSE),
+]
+
+SCENE_REST_ITEMS_NORMAL_WATERSTATUS: list[SceneRestItem] = [
+    SceneRestItem(rest_command=COMMAND_RESIDUAL_WATERHARDNESS, value="10"),
+    SceneRestItem(rest_command=COMMAND_STANDBY, value=OPEN),
+]
+
 BUTTON_ITEMS: list[Item] = [
     Item(
         rest_item_name=STANDBY_ON,
@@ -335,5 +362,28 @@ BUTTON_ITEMS: list[Item] = [
         rest_item_name=TURN_ON_THE_WATER,
         format=BUTTON_TYPE,
         list_of_entites=LIST_OF_TURN_ON_THE_WATER,
+    ),
+]
+
+SCENE_ITEMS: list[SceneItem] = [
+    SceneItem(
+        scene_name=SCENE_GARTEN_IRRIGATION,
+        icon="mdi:watering-can",
+        list_of_rest_commands=SCENE_REST_ITEMS_GARTENWATER_IRRIGATION,
+    ),
+    SceneItem(
+        scene_name=SCENE_POOL_FILL_UP,
+        icon="mdi:pool",
+        list_of_rest_commands=SCENE_REST_ITEMS_POOL_REFILL,
+    ),
+    SceneItem(
+        scene_name=SCENE_REFILL_BOILER_HEATING,
+        icon="mdi:water-boiler",
+        list_of_rest_commands=SCENE_REST_ITEMS_REFILL_BOILER_HEATING,
+    ),
+    SceneItem(
+        scene_name=SCENE_NORMAL_WATERSTATUS,
+        icon="mdi:water",
+        list_of_rest_commands=SCENE_REST_ITEMS_NORMAL_WATERSTATUS,
     ),
 ]

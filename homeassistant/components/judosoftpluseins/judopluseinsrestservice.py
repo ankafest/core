@@ -33,7 +33,7 @@ from .const import (
     COMMAND_WATER_CURRENT,
     COMMAND_WATER_TOTAL,
     DATA,
-    DEFAULT_DEVICE,
+    DEVICE_FOR_CONNECT,
     GROUP,
     GROUP_CONSUMPTION,
     GROUP_INFO,
@@ -100,7 +100,7 @@ class JudoRestAPI:
             GROUP: GROUP_REGISTER,
             COMMAND: COMMAND_CONNECT,
             SERIAL_NUMBER: self.serial_nummber,
-            PARAMETER: DEFAULT_DEVICE,
+            PARAMETER: DEVICE_FOR_CONNECT,
         }
 
         self.consumption_request = {
@@ -362,6 +362,7 @@ class JudoRestAPI:
         await self.get_request(params, "logout from Judo API")
 
     async def async_turn_the_water(self, parameter):
+        """Turn on/off the water."""
         params = self.water_on_off_request | {PARAMETER: parameter}
         await self.get_request(
             params, f"turn {'on' if parameter == OPEN else 'off'} the water"

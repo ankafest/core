@@ -37,13 +37,13 @@ async def async_setup_entry(
     index = 0
     for item in BUTTON_ITEMS:
         for entity in item.list_of_entites:
-            mysensor = WaterstopButtonEntity(
+            mybutton = MyButtonEntity(
                 config_entry=config_entry,
                 entity_item=entity,
                 coordinator=coordinator,
                 idx=index,
             )
-            entries.append(mysensor)
+            entries.append(mybutton)
             index += 1
 
     async_add_entities(
@@ -52,7 +52,7 @@ async def async_setup_entry(
     )
 
 
-class WaterstopButtonEntity(CoordinatorEntity, ButtonEntity, MyEntity):
+class MyButtonEntity(CoordinatorEntity, ButtonEntity, MyEntity):
     """Representation of a button to start or stop the waterstop."""
 
     def __init__(
