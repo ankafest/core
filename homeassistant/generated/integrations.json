@@ -3374,7 +3374,6 @@
       "iot_class": "cloud_push"
     },
     "judosoftpluseins": {
-      "name": "Judo Soft Plus Eins",
       "integration_type": "hub",
       "config_flow": true,
       "iot_class": "local_polling"
@@ -8343,6 +8342,7 @@
     "integration",
     "irm_kmi",
     "islamic_prayer_times",
+    "judosoftpluseins",
     "local_calendar",
     "local_ip",
     "local_todo",
