@@ -15,7 +15,6 @@ from .judopluseinsrestservice import JudoRestAPI
 _PLATFORMS: list[Platform] = [
     Platform.BUTTON,
     Platform.NUMBER,
-    Platform.SCENE,
     Platform.SENSOR,
 ]
 

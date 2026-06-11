@@ -26,6 +26,18 @@
     },
     "entity": {
         "button": {
+            "garten_irrigation": {
+                "name": "Garten irrigation"
+            },
+            "normal_wateroperation": {
+                "name": "Standard water operation"
+            },
+            "pool_fill_up": {
+                "name": "Pool fill up"
+            },
+            "refill_boiler_heating": {
+                "name": "Refill boiler heating"
+            },
             "regeneration": {
                 "name": "Regeneration"
             },
@@ -45,20 +57,6 @@
         "number": {
             "residual_water_hardness": {
                 "name": "Residual hardness"
-            }
-        },
-        "scene": {
-            "garten_irrigation": {
-                "name": "Garten irrigation"
-            },
-            "normal_waterstatus": {
-                "name": "Normal water status"
-            },
-            "pool_fill_up": {
-                "name": "Pool fill up"
-            },
-            "refill_boiler_heating": {
-                "name": "Refill boiler heating"
             }
         },
         "sensor": {

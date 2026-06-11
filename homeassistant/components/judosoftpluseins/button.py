@@ -17,6 +17,10 @@ from .const import (
     STOP,
     TRANSLATION_KEY_SET_STANDBY_OFF,
     TRANSLATION_KEY_SET_STANDBY_ON,
+    TRANSLATION_KEY_OF_GARTEN_IRRIGATION,
+    TRANSLATION_KEY_OF_NORMAL_WATEROPERATION,
+    TRANSLATION_KEY_OF_POOL_FILL_UP,
+    TRANSLATION_KEY_OF_REFILL_BOILER_HEATING,
 )
 from .coordinator import MyCoordinator
 from .entity import EntityItem, MyEntity
@@ -76,6 +80,7 @@ class MyButtonEntity(CoordinatorEntity, ButtonEntity, MyEntity):
 
     async def async_press(self) -> None:
         """Turn the entity on."""
+        log.info("Button %s pressed", self._entity_item.translation_key)
         if self._entity_item.translation_key == TRANSLATION_KEY_SET_STANDBY_OFF:
             await self._rest_api.async_set_waterstop_standby(on_off_command=START)
         elif self._entity_item.translation_key == TRANSLATION_KEY_SET_STANDBY_ON:
@@ -86,6 +91,24 @@ class MyButtonEntity(CoordinatorEntity, ButtonEntity, MyEntity):
             await self._rest_api.async_turn_the_water(parameter=CLOSE)
         elif self._entity_item.translation_key == TRANSLATION_KEY_SET_STANDBY_ON:
             await self._rest_api.async_turn_the_water(parameter=OPEN)
+        elif (
+            self._entity_item.translation_key
+            == TRANSLATION_KEY_OF_NORMAL_WATEROPERATION
+        ):
+            await self._rest_api.async_set_waterstop_standby(on_off_command=STOP)
+            await self._rest_api.async_set_residual_waterhardness(10)
+        elif self._entity_item.translation_key in (
+            TRANSLATION_KEY_OF_GARTEN_IRRIGATION,
+            TRANSLATION_KEY_OF_POOL_FILL_UP,
+        ):
+            await self._rest_api.async_set_waterstop_standby(on_off_command=START)
+            await self._rest_api.async_set_residual_waterhardness(20)
+        elif (
+            self._entity_item.translation_key
+            == TRANSLATION_KEY_OF_REFILL_BOILER_HEATING
+        ):
+            await self._rest_api.async_set_waterstop_standby(on_off_command=START)
+            await self._rest_api.async_set_residual_waterhardness(5)
 
     async def async_regerate(self) -> None:
         """Start the regeneration."""

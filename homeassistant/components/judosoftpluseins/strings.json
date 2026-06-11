@@ -39,16 +39,14 @@
       "set_standby_mode_off": {"name": "Deactivate water protection"},
       "regeneration": {"name": "Regeneration"},
       "turn_off_the_water": {"name": "Turn off the water"},
-      "turn_on_the_water": {"name": "Turn on the water"}
-    },
-    "number": {
-      "residual_water_hardness": {"name": "Residual hardness"}
-    },
-    "scene": {
+      "turn_on_the_water": {"name": "Turn on the water"},
       "garten_irrigation": {"name": "Garten irrigation"},
       "pool_fill_up": {"name": "Pool fill up"},
       "refill_boiler_heating": {"name": "Refill boiler heating"},
-      "normal_waterstatus": {"name": "Normal water status"}
+      "normal_wateroperation": {"name": "Standard water operation"}
+    },
+    "number": {
+      "residual_water_hardness": {"name": "Residual hardness"}
     }
   },
   "title": "JudoSoftPlusEins configuration"

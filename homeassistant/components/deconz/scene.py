@@ -40,7 +40,7 @@ class DeconzScene(DeconzSceneMixin, Scene):
 
     TYPE = SCENE_DOMAIN
 
-    async def async_activate(self, **kwargs: Any) -> None:
+    async def async_turn_on(self, **kwargs: Any) -> None:
         """Activate the scene."""
         await self.hub.api.scenes.recall(
             self._device.group_id,

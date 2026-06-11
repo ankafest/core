@@ -4,8 +4,6 @@ from homeassistant.const import PERCENTAGE, UnitOfMass, UnitOfVolume
 
 from .entity_item import EntityItem
 from .item import Item
-from .scene_item import SceneItem
-from .scene_rest_item import SceneRestItem
 
 DOMAIN = "judosoftpluseins"
 DEVICE = "Judo iSoft plus"
@@ -87,10 +85,10 @@ CLOSE = "close"
 START = "start"
 STOP = "stop"
 """Scene name"""
-SCENE_GARTEN_IRRIGATION = "garten_irrigation"
-SCENE_POOL_FILL_UP = "pool_fill_up"
-SCENE_REFILL_BOILER_HEATING = "refill_boiler_heating"
-SCENE_NORMAL_WATERSTATUS = "normal_waterstatus"
+TRANSLATION_KEY_OF_GARTEN_IRRIGATION = "garten_irrigation"
+TRANSLATION_KEY_OF_POOL_FILL_UP = "pool_fill_up"
+TRANSLATION_KEY_OF_REFILL_BOILER_HEATING = "refill_boiler_heating"
+TRANSLATION_KEY_OF_NORMAL_WATEROPERATION = "normal_wateroperation"
 
 """For Types of Entites"""
 SENSOR_TYPE = "sensor"
@@ -252,6 +250,38 @@ LIST_OF_TURN_ON_THE_WATER: list[EntityItem] = [
     )
 ]
 
+LIST_OF_WATER_IRRIGATION: list[EntityItem] = [
+    EntityItem(
+        translation_key=TRANSLATION_KEY_OF_GARTEN_IRRIGATION,
+        icon="mdi:watering-can",
+        unit=" ",
+    )
+]
+
+LIST_OF_REFILL_BOILER_HEATING: list[EntityItem] = [
+    EntityItem(
+        translation_key=TRANSLATION_KEY_OF_REFILL_BOILER_HEATING,
+        icon="mdi:water-boiler",
+        unit=" ",
+    )
+]
+
+LIST_OF_POOL_FILL_UP: list[EntityItem] = [
+    EntityItem(
+        translation_key=TRANSLATION_KEY_OF_POOL_FILL_UP,
+        icon="mdi:pool",
+        unit=" ",
+    )
+]
+
+LIST_OF_NORMAL_WATEROPERATION: list[EntityItem] = [
+    EntityItem(
+        translation_key=TRANSLATION_KEY_OF_NORMAL_WATEROPERATION,
+        icon="mdi:water",
+        unit=" ",
+    )
+]
+
 LIST_OF_CURRENT_WATER_VALVE: list[EntityItem] = [
     EntityItem(
         translation_key=TRANSLATION_KEY_CURRENT_WATER_VALVE,
@@ -318,25 +348,6 @@ REST_ITEMS: list[Item] = [
     ),
 ]
 
-SCENE_REST_ITEMS_GARTENWATER_IRRIGATION: list[SceneRestItem] = [
-    SceneRestItem(rest_command=COMMAND_RESIDUAL_WATERHARDNESS, value="20"),
-    SceneRestItem(rest_command=COMMAND_STANDBY, value=CLOSE),
-]
-
-SCENE_REST_ITEMS_POOL_REFILL: list[SceneRestItem] = [
-    SceneRestItem(rest_command=COMMAND_RESIDUAL_WATERHARDNESS, value="20"),
-    SceneRestItem(rest_command=COMMAND_STANDBY, value=CLOSE),
-]
-SCENE_REST_ITEMS_REFILL_BOILER_HEATING: list[SceneRestItem] = [
-    SceneRestItem(rest_command=COMMAND_RESIDUAL_WATERHARDNESS, value="5"),
-    SceneRestItem(rest_command=COMMAND_STANDBY, value=CLOSE),
-]
-
-SCENE_REST_ITEMS_NORMAL_WATERSTATUS: list[SceneRestItem] = [
-    SceneRestItem(rest_command=COMMAND_RESIDUAL_WATERHARDNESS, value="10"),
-    SceneRestItem(rest_command=COMMAND_STANDBY, value=OPEN),
-]
-
 BUTTON_ITEMS: list[Item] = [
     Item(
         rest_item_name=STANDBY_ON,
@@ -363,27 +374,24 @@ BUTTON_ITEMS: list[Item] = [
         format=BUTTON_TYPE,
         list_of_entites=LIST_OF_TURN_ON_THE_WATER,
     ),
-]
-
-SCENE_ITEMS: list[SceneItem] = [
-    SceneItem(
-        scene_name=SCENE_GARTEN_IRRIGATION,
-        icon="mdi:watering-can",
-        list_of_rest_commands=SCENE_REST_ITEMS_GARTENWATER_IRRIGATION,
+    Item(
+        rest_item_name=TRANSLATION_KEY_OF_GARTEN_IRRIGATION,
+        format=BUTTON_TYPE,
+        list_of_entites=LIST_OF_WATER_IRRIGATION,
     ),
-    SceneItem(
-        scene_name=SCENE_POOL_FILL_UP,
-        icon="mdi:pool",
-        list_of_rest_commands=SCENE_REST_ITEMS_POOL_REFILL,
+    Item(
+        rest_item_name=TRANSLATION_KEY_OF_REFILL_BOILER_HEATING,
+        format=BUTTON_TYPE,
+        list_of_entites=LIST_OF_REFILL_BOILER_HEATING,
     ),
-    SceneItem(
-        scene_name=SCENE_REFILL_BOILER_HEATING,
-        icon="mdi:water-boiler",
-        list_of_rest_commands=SCENE_REST_ITEMS_REFILL_BOILER_HEATING,
+    Item(
+        rest_item_name=TRANSLATION_KEY_OF_POOL_FILL_UP,
+        format=BUTTON_TYPE,
+        list_of_entites=LIST_OF_POOL_FILL_UP,
     ),
-    SceneItem(
-        scene_name=SCENE_NORMAL_WATERSTATUS,
-        icon="mdi:water",
-        list_of_rest_commands=SCENE_REST_ITEMS_NORMAL_WATERSTATUS,
+    Item(
+        rest_item_name=TRANSLATION_KEY_OF_NORMAL_WATEROPERATION,
+        format=BUTTON_TYPE,
+        list_of_entites=LIST_OF_NORMAL_WATEROPERATION,
     ),
 ]

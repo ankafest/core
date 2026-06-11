@@ -269,7 +269,6 @@ class JudoRestAPI:
                 self.error_during_get_request,
                 "waterstop: set standby " + on_off_command,
             )
-        result = response.json()
 
     async def async_get_natural_water_hardness(self):
         """Get natural water hardness."""
@@ -357,9 +356,26 @@ class JudoRestAPI:
 
     async def async_logout(self):
         """Logout from Judo API."""
-        log.info("Logging out from Judo API")
-        params = self.logout_param
-        await self.get_request(params, "logout from Judo API")
+        params = self.logout_param | {TOKEN: self.token}
+        try:
+            response = await self.homeassisant.async_add_executor_job(
+                partial(
+                    requests.get,
+                    url=self.base_url,
+                    params=params,
+                    timeout=60,
+                    verify=False,
+                )
+            )
+            if response.status_code != 200:
+                log.error(
+                    self.error_message_response_status,
+                    "Logout",
+                    response.status_code,
+                )
+                raise requests.exceptions.RequestException
+        except GetRequestException:
+            log.info(self.error_during_get_request, "Logout")
 
     async def async_turn_the_water(self, parameter):
         """Turn on/off the water."""
