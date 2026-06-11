@@ -3373,7 +3373,7 @@
       "config_flow": false,
       "iot_class": "cloud_push"
     },
-    "judosoftpluseins": {
+    "judoisoftplus": {
       "integration_type": "hub",
       "config_flow": true,
       "iot_class": "local_polling"
@@ -8342,7 +8342,7 @@
     "integration",
     "irm_kmi",
     "islamic_prayer_times",
-    "judosoftpluseins",
+    "judoisoftplus",
     "local_calendar",
     "local_ip",
     "local_todo",

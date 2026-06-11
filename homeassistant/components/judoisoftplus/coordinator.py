@@ -21,7 +21,7 @@ from .const import (
     COMMAND_WATER_TOTAL,
 )
 from .item import Item
-from .judopluseinsrestservice import JudoRestAPI
+from .judoisoftplusrestservice import JudoRestAPI
 
 logging.basicConfig()
 log = logging.getLogger(__name__)

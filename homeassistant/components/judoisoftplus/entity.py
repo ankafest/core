@@ -7,7 +7,7 @@ from homeassistant.helpers.entity import Entity
 from .configentry import MyConfigEntry
 from .const import DEVICE, DOMAIN
 from .item import EntityItem
-from .judopluseinsrestservice import JudoRestAPI
+from .judoisoftplusrestservice import JudoRestAPI
 
 
 class MyEntity(Entity):

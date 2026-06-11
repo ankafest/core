@@ -360,7 +360,7 @@ FLOWS = {
         "izone",
         "jellyfin",
         "jewish_calendar",
-        "judosoftpluseins",
+        "judoisoftplus",
         "justnimbus",
         "jvc_projector",
         "kaleidescape",

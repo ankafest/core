@@ -9,7 +9,7 @@ from homeassistant.core import HomeAssistant
 from .configentry import MyConfigEntry, MyData
 from .const import REST_ITEMS
 from .coordinator import MyCoordinator
-from .judopluseinsrestservice import JudoRestAPI
+from .judoisoftplusrestservice import JudoRestAPI
 
 # For your initial PR, limit it to 1 platform.
 _PLATFORMS: list[Platform] = [

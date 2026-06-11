@@ -5,7 +5,7 @@ from homeassistant.const import PERCENTAGE, UnitOfMass, UnitOfVolume
 from .entity_item import EntityItem
 from .item import Item
 
-DOMAIN = "judosoftpluseins"
+DOMAIN = "judoisoftplus"
 DEVICE = "Judo iSoft plus"
 
 """Constants for the Judo (Rest-Service i-soft plus) integration."""

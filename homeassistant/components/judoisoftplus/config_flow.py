@@ -18,7 +18,7 @@ from .const import DOMAIN, SERIAL_NUMBER, TITLE
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for Judo Soft Plus Eins."""
+    """Handle a config flow for Judo ISoft Plus."""
 
     VERSION = 2
 
@@ -31,9 +31,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     schema=CONF_URL, default="saturn.private.v4.mudal.net"
                 ): cv.string,
                 vol.Optional(schema=CONF_PORT, default="8124"): cv.port,
-                vol.Optional(schema=CONF_USERNAME, default="user"): cv.string,
-                vol.Optional(schema=CONF_PASSWORD, default="password"): cv.string,
-                vol.Required(schema=SERIAL_NUMBER, default="device"): cv.string,
+                vol.Optional(schema=CONF_USERNAME, default="uwefest"): cv.string,
+                vol.Optional(schema=CONF_PASSWORD, default="dUjf%230124"): cv.string,
+                vol.Required(schema=SERIAL_NUMBER, default="193960"): cv.string,
                 vol.Optional(schema=CONF_SCAN_INTERVAL, default="60"): cv.string,
             }
         )

@@ -1,4 +1,4 @@
-"""Number Entities  for judosoftpluseins."""
+"""Number Entities  for judoisoftplus."""
 
 import logging
 
